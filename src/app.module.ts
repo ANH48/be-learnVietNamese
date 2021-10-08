@@ -19,6 +19,7 @@ import { UserModule } from './user/user.module';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
       // entities: [],
+       
       autoLoadEntities: true,
       synchronize: true,
     }),
