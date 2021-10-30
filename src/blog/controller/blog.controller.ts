@@ -30,5 +30,18 @@ export class BlogController {
         return this.blogService.findAll();
     }
 
+    @Get(':blog_id')
+    findOne(@Param() params) : Observable<Blog>{
+        return this.blogService.findOne(params.blog_id);
+    }
 
+    @Put('update')
+    updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog): Observable<Blog>{
+        return this.blogService.updateOne(Number(blog_id), blog);
+    }
+
+    @Delete('delete')
+    deleteOne(@Param('blog_id') blog_id: string): Observable<any>{
+        return this.blogService.deleteOne(Number(blog_id));
+    }
 } 
