@@ -1,10 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiCreatedResponse, ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { registerAs } from '@nestjs/config';
+import { ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, map, Observable, of } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { User, UserRole } from '../models/user.interface';
+import { LoginDTO } from '../models/user.model';
 import { UserService } from '../service/user.service';
 
 @ApiTags('users')
@@ -15,7 +17,7 @@ export class UserController {
 
     @hasRoles(UserRole.ADMIN)
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Post()
+    @Post('create')
     @ApiCreatedResponse({description: "Create date with autho"})
     @ApiForbiddenResponse({description: 'Forbidden'})
     create(@Body()user: User): Observable<User | Object> {
@@ -26,9 +28,10 @@ export class UserController {
     }
 
     @Post('login')
-    @ApiCreatedResponse({description: "Create date with autho"})
-    @ApiForbiddenResponse({description: 'Forbidden'})
-    login(@Body() user: User): Observable<Object> {
+    @ApiResponse({description: "User Login"})
+    @ApiUnauthorizedResponse({description: 'Invalid credentials'})
+    login(@Body() user: User, loginDTO: LoginDTO): Observable<Object> {
+        console.log(loginDTO);
         return this.userService.login(user).pipe(
             map((jwt: string) => {
                 return {access_token: jwt};
@@ -69,4 +72,12 @@ export class UserController {
         return this.userService.updateRoleOfUser(Number(id),user);
     }
 
+  
+    @Post('register')
+    register(@Body()user: User): Observable<User | Object> {
+        return this.userService.register(user).pipe(
+            map((user: User) => user),
+            catchError(err => of({error: err.message})) 
+        );
+    }
 } 

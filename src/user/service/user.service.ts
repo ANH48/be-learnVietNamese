@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
+import { type } from 'os';
 import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
 import { Repository } from 'typeorm';
@@ -23,6 +25,27 @@ export class UserService {
                 newUser.email = user.email;
                 newUser.password = passwordHash;
                 newUser.role = user.role;
+                return from(this.userRepository.save(newUser)).pipe(
+                    map((user: User) => {
+                        const {password, ...result} = user;
+                        return result;
+                    }),
+                    catchError(err => throwError(()=> new Error(err)) )
+                )
+            })
+        )
+        // return from(this.userRepository.save(user));
+    }
+
+    register(user: User): Observable<User> {
+        return this.authService.hashPassword(user.password).pipe(
+            switchMap((passwordHash: string) => {
+                const newUser = new UserEntity();
+                newUser.name = user.name;
+                newUser.username = user.username;
+                newUser.email = user.email;
+                newUser.password = passwordHash;
+                //newUser.role = 'user';
                 return from(this.userRepository.save(newUser)).pipe(
                     map((user: User) => {
                         const {password, ...result} = user;
