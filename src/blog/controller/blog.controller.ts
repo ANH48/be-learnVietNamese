@@ -1,13 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { Blog } from '../models/blog.interface';
 import { LoginDTO } from '../models/blog.model';
 import { BlogService } from '../service/blog.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path = require('path');
+import { join } from 'path';
+
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads/blogs',
+        filename: (req, file, cb) => {
+            const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+
+            cb(null, `${filename}${extension}`)
+        }
+    })
+
+} 
 
 @ApiTags('blogs')
 @Controller('blogs')
@@ -44,4 +62,26 @@ export class BlogController {
     deleteOne(@Param('blog_id') blog_id: string): Observable<any>{
         return this.blogService.deleteOne(Number(blog_id));
     }
+
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file', storage))
+    uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
+        // const blog: Blog = req.blog;
+
+        // blog.blog_avatar = file.filename;
+        // return this.blogService.updateOne(blog.blog_id, blog).pipe(
+        //     tap((blog: Blog) => console.log(blog)),
+        //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
+        // )
+        console.log(req);
+        return of({imagePath: file.filename});
+    }
+
+    @Get('blogs-image/:imagename')
+    findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
+        return of(res.sendFile(join(process.cwd(), 'upload/blogs/' + imagename)));
+    }
+
+
 } 
