@@ -35,7 +35,7 @@ export class BlogController {
         return this.blogService.findOne(params.blog_id);
     }
 
-    @Put('update')
+    @Put('update/:blog_id')
     updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog): Observable<Blog>{
         return this.blogService.updateOne(Number(blog_id), blog);
     }
