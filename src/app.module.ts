@@ -6,7 +6,7 @@ import {TypeOrmModule} from '@nestjs/typeorm'
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
-import { BlogTypeModule } from './blog copy/blog_type.module';
+import { BlogTypeModule } from './blog-type/blog_type.module';
 
 
 
