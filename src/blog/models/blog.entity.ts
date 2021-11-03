@@ -1,4 +1,5 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BlogTypeEntity } from "src/blog copy/models/blog_type.entity";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 // import { UserRole } from "./blog.interface";
 
 @Entity({name: "blogs"})
@@ -26,6 +27,9 @@ export class BlogEntity {
 
     @Column()
     blog_keyword: string;
+
+    @ManyToOne(() => BlogTypeEntity, blogType => blogType.blog_type_id)
+    blogType: BlogTypeEntity;
 
     // @BeforeInsert()
     // emailToLowerCase(){
