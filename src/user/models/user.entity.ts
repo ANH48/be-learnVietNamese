@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 
 @Entity({name: "users"})
@@ -31,5 +31,10 @@ export class UserEntity {
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     update: Date;
+
+    @BeforeUpdate()
+    updateTimestamp(){
+        this.update = new Date; 
+    }
 
 }
