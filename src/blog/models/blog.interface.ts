@@ -8,6 +8,7 @@ export interface Blog {
     blog_avatar?: string;
     blog_video?: string;
     blog_keyword?: string;
+    likes?:number;  
     blog_create: Date;
     blog_update: Date;
 }

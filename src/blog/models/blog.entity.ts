@@ -1,6 +1,6 @@
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
 
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate } from "typeorm";
 
 // import { UserRole } from "./blog.interface";
 
@@ -43,5 +43,13 @@ export class BlogEntity {
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_update: Date;
+
+    @Column({default: 0})
+    likes: number;
+
+    @BeforeUpdate()
+    updateTimestamp(){
+        this.blog_update = new Date; 
+    }
 
 }
