@@ -43,6 +43,7 @@ export class BlogTypeController {
     deleteOne(@Param('BlogType_id') BlogType_id: string): Observable<any>{
         return this.blogTypeService.deleteOne(Number(BlogType_id));
     }
+    
 
 
 } 
