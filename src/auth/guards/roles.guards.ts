@@ -20,7 +20,6 @@ export class RolesGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
     const user: User = request.user.user;
-    // console.log(user);
 
     return this.userService.findOne(user.id).pipe(
         map((user: User) => {
