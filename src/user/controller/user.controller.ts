@@ -38,7 +38,8 @@ export class UserController {
             })
         )
     }
-
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Get(':id')
     findOne(@Param() params): Observable<User> {
         return this.userService.findOne(params.id);
@@ -58,7 +59,7 @@ export class UserController {
     //     return this.userService.deleteOne(Number(id));
     // }
 
-    @hasRoles(UserRole.ADMIN)
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Patch('update/:id')
     updateOne(@Param('id') id: string, @Body() user: User): Observable<any>{

@@ -19,15 +19,25 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
+    const params = request.params
     const user: User = request.user.user;
 
     return this.userService.findOne(user.id).pipe(
         map((user: User) => {
+ 
             const hasRoles= () => roles.indexOf(user.role) >-1;
             let hasPermission: boolean = false;
-
+          
             if(hasRoles()){
+              if(user.role=='admin'){
                 hasPermission = true;
+              }else{
+                if(user.id==params?.id){
+                  hasPermission = true;
+                }else{
+                  hasPermission = false;
+                }
+              }
             }
 
             return user && hasPermission;
