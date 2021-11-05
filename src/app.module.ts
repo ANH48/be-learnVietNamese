@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { BlogModule } from './blog/blog.module';
 import { BlogTypeModule } from './blog-type/blog_type.module';
+import { CourseModule } from './course/course.module';
+import { LessionModule } from './lession/lession.module';
+
 
 
 
@@ -29,7 +32,9 @@ import { BlogTypeModule } from './blog-type/blog_type.module';
     UserModule,
     AuthModule,
     BlogModule,
-    BlogTypeModule
+    BlogTypeModule,
+    CourseModule,
+    LessionModule
   ],
   controllers: [AppController],
   providers: [AppService],

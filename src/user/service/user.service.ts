@@ -94,16 +94,21 @@ export class UserService {
     }
 
     login(user: User): Observable<string> {
-        return this.validateUser(user.email, user.password).pipe(
-            switchMap((user: User) => {
-                if(user) {
-                    return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
-
-                }else {
-                    return 'Wrong Credentials';
-                }
-            })
-        )
+        if(user.password){
+            return this.validateUser(user.email, user.password).pipe(
+                switchMap((user: User) => {
+                    if(user) {
+                        return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
+    
+                    }else {
+                        return 'Wrong Credentials';
+                    }
+                })
+            )
+        }
+       else{
+        return;
+       }
     }
 
     validateUser(email: string, password: string): Observable<User> {
