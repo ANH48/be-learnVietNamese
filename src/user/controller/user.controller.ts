@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -16,8 +16,15 @@ export class UserController {
 
     constructor(private userService: UserService){ }
 
-    // @hasRoles(UserRole.ADMIN)
-    // @UseGuards(JwtAuthGuard, RolesGuard)
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Get('profile')
+    getProfile(@Request() req) {
+        return req.user;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(UserRole.ADMIN)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with autho"})
     @ApiForbiddenResponse({description: 'Forbidden'})
@@ -32,37 +39,47 @@ export class UserController {
     @ApiResponse({description: "User Login"})
     @ApiUnauthorizedResponse({description: 'Invalid credentials'})
     login(@Body() user: User, loginDTO: LoginDTO): Observable<Object> {
-        return this.userService.login(user).pipe(
-            map((jwt: string) => {
-                return {access_token: jwt};
-            })
-        )
+        if((user.email && user.password) || (user.username && user.password)){
+            return this.userService.login(user).pipe(
+                map((jwt: string) => {
+                    return {access_token: jwt};
+                })
+            )
+        }else{
+            const obj: any = {
+                error: "invalid email or password"
+            }
+            return obj;
+        }
+        
     }
-    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
     @Get(':id')
     findOne(@Param() params): Observable<User> {
         return this.userService.findOne(params.id);
     }  
 
     @hasRoles(UserRole.ADMIN)
-    @UseGuards(JwtAuthGuard, RolesGuard)
+
     @Get()
     findAll() : Observable<User[]>{
         return this.userService.findAll();
     }
 
     // @hasRoles(UserRole.USER,UserRole.MEMBER)
-    // @UseGuards(JwtAuthGuard, RolesGuard)
+    //
     // @Delete(':id')
     // deleteOne(@Param('id') id: string) : Observable<any>{
     //     return this.userService.deleteOne(Number(id));
     // }
-
-    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
     @Patch('update/:id')
-    updateOne(@Param('id') id: string, @Body() user: User): Observable<any>{
+    updateOne(@Param('id') id: string, @Body() user: User, @Request() req): Observable<any>{
+        if(req.user.user.role!="admin"){
+            user.role = UserRole.USER;
+        }
         return this.userService.updateOne(Number(id),user);
     }
 

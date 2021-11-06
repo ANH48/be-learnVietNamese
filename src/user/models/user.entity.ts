@@ -1,4 +1,7 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
+import { BlogEntity } from "src/blog/models/blog.entity";
+import { Blog } from "src/blog/models/blog.interface";
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 
 @Entity({name: "users"})

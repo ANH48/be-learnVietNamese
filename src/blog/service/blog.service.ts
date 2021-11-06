@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type } from 'os';
@@ -19,7 +19,9 @@ export class BlogService {
         @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
         ) {}
 
-        create(blog: Blog): Observable<Blog> {
+        create(blog: Blog, user: any): Observable<Blog> {
+            
+    
             const newBlog = new BlogEntity();
             newBlog.blog_title = blog.blog_title;
             newBlog.blog_description = blog.blog_description;
@@ -28,6 +30,8 @@ export class BlogService {
             newBlog.blog_video = blog.blog_video;
             newBlog.blog_avatar = blog.blog_avatar;
             newBlog.blog_keyword = blog.blog_keyword;
+            newBlog.author = user?.user.id;
+
             return from(this.blogRepository.save(newBlog)).pipe(
                 map((blog: Blog) => {
                     const { ...result} = blog;
@@ -39,8 +43,11 @@ export class BlogService {
         }
         findAll() : Observable<Blog[]>{
             return from(this.blogRepository.find()).pipe(
-                map((blog: Blog[]) => {
-                    return blog;
+                map((blogs: Blog[]) => {
+                    blogs.map((blog) => {
+                      delete blog.author;
+                    })
+                    return blogs;
                 })
             )
         }
@@ -48,6 +55,7 @@ export class BlogService {
     findOne(blog_id: number) : Observable<Blog>{
         return from(this.blogRepository.findOne({blog_id})).pipe(
             map((blog: Blog) => {
+                delete blog.author;
                 const {...result} = blog;
                 return result;
             })

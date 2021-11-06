@@ -13,6 +13,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
+import { ListRole } from 'src/auth/role/role.enum';
 
 export const storage = {
     storage: diskStorage({
@@ -33,15 +34,19 @@ export class BlogController {
 
     constructor(private blogService: BlogService){ }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(ListRole.ADMIN)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
-    create(@Body()blog: Blog): Observable<Blog | Object> {
-        return this.blogService.create(blog).pipe(
+    create(@Body()blog: Blog, @Request() req): Observable<Blog | Object> {
+
+        return this.blogService.create(blog,req.user).pipe(
             map((blog: Blog) => blog),
             catchError(err => of({error: err.message})) 
         );
     }
+
 
     @Get()
     findAll() : Observable<Blog[]>{
@@ -52,18 +57,22 @@ export class BlogController {
     findOne(@Param() params) : Observable<Blog>{
         return this.blogService.findOne(params.blog_id);
     }
-
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(ListRole.ADMIN)
     @Put('update/:blog_id')
     updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog): Observable<Blog>{
         return this.blogService.updateOne(Number(blog_id), blog);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(ListRole.ADMIN)
     @Delete('delete')
     deleteOne(@Param('blog_id') blog_id: string): Observable<any>{
         return this.blogService.deleteOne(Number(blog_id));
     }
 
-
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @hasRoles(ListRole.ADMIN)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
@@ -74,7 +83,6 @@ export class BlogController {
         //     tap((blog: Blog) => console.log(blog)),
         //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
         // )
-        console.log(req);
         return of({imagePath: file.filename});
     }
 
