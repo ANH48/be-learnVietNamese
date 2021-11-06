@@ -1,4 +1,5 @@
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
+import { UserEntity } from "src/user/models/user.entity";
 
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate } from "typeorm";
 
@@ -37,6 +38,10 @@ export class BlogEntity {
     // emailToLowerCase(){
     //     this.email = this.email.toLowerCase()
     // }
+
+    @Column()
+    author: number;
+
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_create: Date;

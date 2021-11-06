@@ -1,3 +1,4 @@
+import { UserEntity } from "src/user/models/user.entity";
 
 export interface Blog {
     blog_id?: number; 
@@ -9,6 +10,7 @@ export interface Blog {
     blog_video?: string;
     blog_keyword?: string;
     likes?:number;  
-    blog_create: Date;
-    blog_update: Date;
+    author?:number;
+    blog_create?: Date;
+    blog_update?: Date;
 }

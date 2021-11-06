@@ -20,7 +20,7 @@ import { AuthService } from './service/auth.service';
       forwardRef(()=> UserModule),
       JwtModule.register({
         secret: 'jwt78772adasdasas0099',
-        signOptions: { expiresIn: '300s' },
+        signOptions: { expiresIn: '3000000000s' },
       }),
     // })
   ],
