@@ -29,15 +29,7 @@ export class RolesGuard implements CanActivate {
             let hasPermission: boolean = false;
           
             if(hasRoles()){
-              if(user.role=='admin'){
-                hasPermission = true;
-              }else{
-                if(user.id==params?.id){
-                  hasPermission = true;
-                }else{
-                  hasPermission = false;
-                }
-              }
+              hasPermission = true;
             }
 
             return user && hasPermission;
