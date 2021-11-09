@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { type } from 'os';
 import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
@@ -58,14 +59,36 @@ export class UserService {
         // return from(this.userRepository.save(user));
     }
 
-    findOne(id: number) : Observable<User>{
-        return from(this.userRepository.findOne({id})).pipe(
-            map((user: User) => {
-                const {password, ...result} = user;
-                return result;
-            })
-            )
-    }
+    // findOne(id: number) : Observable<User>{
+    //    try {
+    //     return from(this.userRepository.findOne({id})).pipe(
+    //         map((user: User) => {
+    //             const {password, ...result} = user;
+    //             return result;
+    //         })
+    //         )
+    //    } catch (error) {
+    //         throw new BadRequestException('id existed');
+    //    }
+    // }
+    findOne(id: number) : Observable<any>{
+        try {
+            return from(this.userRepository.findOne({id})).pipe(
+                map((user: User) => {
+                    if(user){
+                        const {password, ...result} = user;
+                        return result;
+                    }
+                    else{
+                        throw new BadRequestException('user no exist');
+                    }
+                    
+                })
+                )
+        } catch (error) {
+             throw new BadRequestException('id existed');
+        }
+     }
 
     findAll() : Observable<User[]>{
         return from(this.userRepository.find()).pipe(
@@ -74,6 +97,16 @@ export class UserService {
                     delete v.password
                 });
                 return users;
+            })
+        )
+    }
+
+    paginate(options: IPaginationOptions): Observable<Pagination<User>>{
+        return from(paginate<User>(this.userRepository, options)).pipe(
+            map((userPageable: Pagination<User>) => {
+                userPageable.items.forEach(function (v) {delete v.password});
+
+                return userPageable
             })
         )
     }
@@ -95,15 +128,19 @@ export class UserService {
 
     login(user: User): Observable<string> {
         if(user.password){
-            return this.validateUser(user.email, user.password, user.username).pipe(
-                switchMap((user: User) => {
-                    if(user) {
-                        return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
-                    }else {
-                        return 'Wrong Credentials';
-                    }
-                })
-            )
+            try {
+                return this.validateUser(user.email, user.password, user.username).pipe(
+                    switchMap((user: User) => {
+                        if(user) {
+                            return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
+                        }else {
+                            return 'Wrong Credentials';
+                        }
+                    })
+                )
+            } catch (error) {
+                throw new BadRequestException('Username or email is existed');
+            }
         }
        else{
         const obj: any = {
