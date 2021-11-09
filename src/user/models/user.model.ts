@@ -45,3 +45,22 @@ export class RegisterUserDTO {
     // @ApiProperty({type: String, description: 'role'})
     // role: UserRole;
 }
+export class ForgotPasswordDTO {
+
+    @ApiProperty({type: String, description: 'email'})
+    email: string;
+
+    // @ApiProperty({type: String, description: 'role'})
+    // role: UserRole;
+}
+
+export class confirmTokenEmailDTO {
+
+    @ApiProperty({type: String, description: 'email'})
+    email: string;
+
+    @ApiProperty({type: String, description: 'tokenEmail'})
+    tokenEmail: string;
+    // @ApiProperty({type: String, description: 'role'})
+    // role: UserRole;
+}

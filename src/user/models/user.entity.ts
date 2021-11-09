@@ -29,6 +29,9 @@ export class UserEntity {
         this.email = this.email.toLowerCase()
     }
 
+    @Column()
+    tokenEmail: string;
+
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     create: Date;
 
@@ -39,5 +42,7 @@ export class UserEntity {
     updateTimestamp(){
         this.update = new Date; 
     }
+
+
 
 }

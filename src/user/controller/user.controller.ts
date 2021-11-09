@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, Param, Patch, Post, Put, Query, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Header, Param, Patch, Post, Put, Query, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiBasicAuth, ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiSecurity, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { query } from 'express';
@@ -7,17 +7,24 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
+import { MailService } from 'src/mail/mail.service';
+// import { MailService } from 'src/mail/mail.service';
 import { UserEntity } from '../models/user.entity';
 import { User, UserRole } from '../models/user.interface';
 // import { AdminRole } from '../../admin/models/admin.interface';
-import { LoginDTO, RegisterUserDTO, UpdateUserDTO } from '../models/user.model';
+import {  confirmTokenEmailDTO, ForgotPasswordDTO, LoginDTO, RegisterUserDTO, UpdateUserDTO } from '../models/user.model';
 import { UserService } from '../service/user.service';
+
 
 @ApiTags('users')
 @Controller('users')
 export class UserController {
 
-    constructor(private userService: UserService){ }
+    constructor(
+        private userService: UserService,
+        private mailService: MailService
+
+        ){ }
 
 
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -139,6 +146,38 @@ export class UserController {
             }
             return obj;
         }
+    }
+
+
+    @Post('forgotpassword')
+    @ApiBody({ type: ForgotPasswordDTO})
+    async forgetpassword(@Body() user: User){
+        const token = Math.floor(100000 + Math.random() * 900000).toString();
+        // create user in db
+        // ...
+        // send confirmation mail
+        const dbUser = await this.userService.isEmail(user,token);
+        if(dbUser){
+            await this.mailService.sendUserConfirmation(user, token)
+        }else{
+            return dbUser;
+        }
         
     }
+
+    @Post('confirmTokenEmail')
+    @ApiBody({ type: confirmTokenEmailDTO})
+    async confirmEmailToken(@Body() user: User){
+        const email = user.email;
+        const tokenEmail = user.tokenEmail;
+        const isUser = await this.userService.checkTokenEmail(email,tokenEmail);
+        if(isUser){
+            await this.mailService.sendResetPassword(user, isUser.password);
+            const isUpdate = await this.userService.updatePasswordOne(isUser.id, isUser);
+            return isUpdate;
+        }else{
+            throw new BadRequestException('Token do not exist ');
+        }
+    }
+ 
 } 
