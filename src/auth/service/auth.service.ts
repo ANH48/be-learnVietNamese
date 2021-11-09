@@ -9,8 +9,14 @@ const bcrypt = require('bcrypt');
 @Injectable()
 export class AuthService {
     
-    constructor(private readonly jwtService: JwtService) {}
+    constructor(
+        private readonly jwtService: JwtService,
+        ) {}
 
+    async asyncHashPassword (password: string):  Promise<any> {
+        const hashPassword =  await bcrypt.hash(password, 12);
+        return hashPassword;
+    }   
     generateJWT(user: User): Observable <string>{
         return from(this.jwtService.signAsync({user}));
     }
@@ -22,5 +28,9 @@ export class AuthService {
     comparePasswords(newPassword: string, passwordHash: string): Observable <any | boolean>{
         return from<any>(bcrypt.compare(newPassword, passwordHash));
     }
+
+    
+
+    
 
 }

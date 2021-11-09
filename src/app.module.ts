@@ -9,6 +9,8 @@ import { BlogModule } from './blog/blog.module';
 import { BlogTypeModule } from './blog-type/blog_type.module';
 import { CourseModule } from './course/course.module';
 import { LessionModule } from './lession/lession.module';
+// import { MailModule } from './mail/mail.module';
+import { MailModule } from './mail/mail.module';
 
 
 
@@ -29,12 +31,14 @@ import { LessionModule } from './lession/lession.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    // MailModule,
     UserModule,
     AuthModule,
     BlogModule,
     BlogTypeModule,
     CourseModule,
-    LessionModule
+    LessionModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

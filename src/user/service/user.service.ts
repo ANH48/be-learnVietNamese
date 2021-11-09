@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../models/user.entity';
 import { User } from '../models/user.interface';
 
+
 @Injectable()
 export class UserService {
 
@@ -16,7 +17,7 @@ export class UserService {
         @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
         private authService: AuthService
         ) {}
-
+     
     create(user: User): Observable<User> {
         return this.authService.hashPassword(user.password).pipe(
             switchMap((passwordHash: string) => {
@@ -197,5 +198,46 @@ export class UserService {
             return error;
         }
        
+    }
+
+   async isEmail(user: User, token: string): Promise<any> {
+   
+    const email =  user.email;
+    const userId = await this.userRepository.findOne({email})
+    if(userId){
+        userId.tokenEmail = token;
+        this.userRepository.update(userId.id,userId)
+        return user;
+    }
+    else{
+        throw new BadRequestException('Username or Email do not exist ');
+    }
+    }
+
+    async checkTokenEmail(email: string, tokenEmail: string): Promise<User> {
+        const user: any = await this.userRepository.findOne({email});
+        if(user){
+            if(tokenEmail === user.tokenEmail){
+                const newPassWord = "@@"+ Math.floor(100000 + Math.random() * 900000).toString() +".!@";
+                user.password = newPassWord;
+                return user;
+            }else{
+                throw new BadRequestException('Token do not exist ');
+            }
+        }else{
+            throw new BadRequestException('Username or Email do not exist ');
+        }
+        
+    }
+
+    async updatePasswordOne(id: number, user: User): Promise<any>{
+        delete user.email;
+        delete user.role;
+        delete user.tokenEmail;
+        // delete user.password;
+        // console.log(user);
+        user.password = await this.authService.asyncHashPassword(user.password);
+        const isUpdate = await this.userRepository.update(id, user);
+        return isUpdate;
     }
 }
