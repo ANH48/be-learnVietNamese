@@ -41,8 +41,6 @@ export class UserController {
     @ApiBearerAuth()
     @hasRoles(UserRole.ADMIN)
     @Post('create')
-    @ApiCreatedResponse({description: "Create date with autho"})
-    @ApiForbiddenResponse({description: 'Forbidden'})
     create(@Body()user: User): Observable<User | Object> {
         return this.userService.create(user).pipe(
             map((user: User) => user),
