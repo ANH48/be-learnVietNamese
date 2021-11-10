@@ -1,10 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { type } from "os";
 
-export class LoginDTO {
-    @ApiProperty({type: String, description: 'email'})
-    email: string;
+export class BlogTypeDTO {
+    @ApiProperty({type: String, description: 'blog_type_name'})
+    blog_type_name: string;
 
-    @ApiProperty({type: String, description: 'password'})
-    password: string;
 }
