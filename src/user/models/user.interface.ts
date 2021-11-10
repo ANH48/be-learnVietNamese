@@ -6,6 +6,7 @@ export interface User {
     email?:string;
     password?:string;
     tokenEmail?:string;
+    expired_token?: Date;
     create: Date;
     update: Date;
     role?: UserRole;
