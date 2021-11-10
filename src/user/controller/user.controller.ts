@@ -103,6 +103,8 @@ export class UserController {
             return this.userService.updateOne(Number(id),user);
         }else{
             user.role = req.user.user.role;
+            user.tokenEmail = req.user.user.tokenEmail;
+            user.expired_token = req.user.user.expired_token;
             if(Number(req.user.user.id) === Number(id)){
                 return this.userService.updateOne(Number(id),user);
             }else{
@@ -152,13 +154,12 @@ export class UserController {
     @Post('forgotpassword')
     @ApiBody({ type: ForgotPasswordDTO})
     async forgetpassword(@Body() user: User){
-        const token = Math.floor(100000 + Math.random() * 900000).toString();
         // create user in db
         // ...
         // send confirmation mail
-        const dbUser = await this.userService.isEmail(user,token);
+        const dbUser = await this.userService.isEmail(user);
         if(dbUser){
-            await this.mailService.sendUserConfirmation(user, token)
+            await this.mailService.sendUserConfirmation(user, user.tokenEmail)
         }else{
             return dbUser;
         }

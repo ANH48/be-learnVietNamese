@@ -50,7 +50,7 @@ export class UserService {
                 //newUser.role = 'user';
                 return from(this.userRepository.save(newUser)).pipe(
                     map((user: User) => {
-                        const {password, ...result} = user;
+                        const {password, tokenEmail, expired_token, ...result} = user;
                         return result;
                     }),
                     catchError(err => throwError(()=> new Error(err)) )
@@ -77,7 +77,7 @@ export class UserService {
             return from(this.userRepository.findOne({id})).pipe(
                 map((user: User) => {
                     if(user){
-                        const {password, ...result} = user;
+                        const {password,expired_token,tokenEmail, ...result} = user;
                         return result;
                     }
                     else{
@@ -133,6 +133,8 @@ export class UserService {
                 return this.validateUser(user.email, user.password, user.username).pipe(
                     switchMap((user: User) => {
                         if(user) {
+                            delete user.expired_token;
+                            delete user.tokenEmail;
                             return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
                         }else {
                             return 'Wrong Credentials';
@@ -200,12 +202,37 @@ export class UserService {
        
     }
 
-   async isEmail(user: User, token: string): Promise<any> {
-   
+   async isEmail(user: User): Promise<any> {
+    let token = Math.floor(100000 + Math.random() * 900000).toString();
     const email =  user.email;
     const userId = await this.userRepository.findOne({email})
     if(userId){
         userId.tokenEmail = token;
+        const day = new Date;
+        const oldDay = userId.expired_token;
+        let isExpired = true;
+        if(oldDay){
+            if(day.getDay()===oldDay.getDay() && day.getMonth()===oldDay.getMonth() && day.getFullYear()===oldDay.getFullYear()){
+                if(day.getHours()===oldDay.getHours()){
+                    const time =  oldDay.getMinutes() - day.getMinutes();
+                    if(time > 0){
+                        isExpired = false;
+                        return user;
+                    }
+                }
+            }
+        }
+        if(isExpired){
+            token = Math.floor(100000 + Math.random() * 900000).toString();
+            day.setMinutes(day.getMinutes() + 5);
+            userId.expired_token = day;
+        }
+        
+        // oldDay.getMinutes()
+        // day.setMinutes(day.getMinutes() + 5);
+        // userId.expired_token = dayZero;
+        // console.log(userId.expired_token,"new");
+        
         this.userRepository.update(userId.id,userId)
         return user;
     }
@@ -217,12 +244,31 @@ export class UserService {
     async checkTokenEmail(email: string, tokenEmail: string): Promise<User> {
         const user: any = await this.userRepository.findOne({email});
         if(user){
+            if(user.tokenEmail===null || tokenEmail===null){
+                throw new BadRequestException('Token is expired');
+            }
             if(tokenEmail === user.tokenEmail){
-                const newPassWord = "@@"+ Math.floor(100000 + Math.random() * 900000).toString() +".!@";
-                user.password = newPassWord;
-                return user;
+                const oldDay = user.expired_token;
+                const day = new Date;
+                let isExpired = false;
+                if(oldDay){
+                    if(day.getDay()===oldDay.getDay() && day.getMonth()===oldDay.getMonth() && day.getFullYear()===oldDay.getFullYear()){
+                        if(day.getHours()===oldDay.getHours()){
+                            const time =  oldDay.getMinutes() - day.getMinutes();
+                            if(time > 0){
+                                isExpired = true;
+                                const newPassWord = "@@"+ Math.floor(100000 + Math.random() * 900000).toString() +".!@";
+                                user.password = newPassWord;
+                                return user;
+                            }
+                        }
+                    }
+                }
+                if(!isExpired){
+                    throw new BadRequestException('Token is expired ');
+                }
             }else{
-                throw new BadRequestException('Token do not exist ');
+                throw new BadRequestException('Token is valued ');
             }
         }else{
             throw new BadRequestException('Username or Email do not exist ');
@@ -240,4 +286,6 @@ export class UserService {
         const isUpdate = await this.userRepository.update(id, user);
         return isUpdate;
     }
+
+
 }

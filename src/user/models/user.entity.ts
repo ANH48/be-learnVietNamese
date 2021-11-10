@@ -29,8 +29,11 @@ export class UserEntity {
         this.email = this.email.toLowerCase()
     }
 
-    @Column()
+    @Column({nullable: true})
     tokenEmail: string;
+
+    @Column({nullable: true})
+    expired_token: Date;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     create: Date;
