@@ -12,10 +12,6 @@ export class BlogTypeEntity {
 
     @OneToMany(() => BlogEntity, blog => blog.blog_id)
     blog: Blog;
-    // @BeforeInsert()
-    // emailToLowerCase(){
-    //     this.email = this.email.toLowerCase()
-    // }
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_create: Date;

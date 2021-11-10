@@ -11,6 +11,7 @@ import { CourseModule } from './course/course.module';
 import { LessionModule } from './lession/lession.module';
 // import { MailModule } from './mail/mail.module';
 import { MailModule } from './mail/mail.module';
+import { SurcriseModule } from './surcrise/surcrise.module';
 
 
 
@@ -39,6 +40,7 @@ import { MailModule } from './mail/mail.module';
     CourseModule,
     LessionModule,
     MailModule,
+    SurcriseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

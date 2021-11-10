@@ -19,41 +19,44 @@ export class LessionService {
         @InjectRepository(LessionEntity) private readonly LessionRepository: Repository<LessionEntity>,
         ) {}
 
-        // create(blogType: BlogType): Observable<BlogType> {
-        //     const newBlog = new BlogTypeEntity();
-        //     newBlog.blog_type_name = blogType.blog_type_name;
-        //     return from(this.blogRepository.save(newBlog)).pipe(
-        //         map((blogType: BlogType) => {
-        //             const { ...result} = blogType;
-        //              return result;
-        //         }),
-        //         catchError(err => throwError(()=> new Error(err)) )
-        //     )
-        //     // return from(this.userRepository.save(user));
-        // }
-        // findAll() : Observable<BlogType[]>{
-        //     return from(this.blogRepository.find()).pipe(
-        //         map((blog: BlogType[]) => {
-        //             return blog;
-        //         })
-        //     )
-        // }
+        create(lession: Lession): Observable<Lession> {
+            const newLession = new LessionEntity();
+            newLession.lession_name = lession.lession_name;
+            newLession.lession_video = lession.lession_video;
+            newLession.lession_img = lession.lession_img;
+            newLession.lession_keyword = lession.lession_keywords;
+            return from(this.LessionRepository.save(newLession)).pipe(
+                map((lessionType: Lession) => {
+                    const { ...result} = lessionType;
+                     return result;
+                }),
+                catchError(err => throwError(()=> new Error(err)) )
+            )
+            // return from(this.userRepository.save(user));
+        }
+        findAll() : Observable<Lession[]>{
+            return from(this.LessionRepository.find()).pipe(
+                map((lession: Lession[]) => {
+                    return lession;
+                })
+            )
+        }
 
-        // findOne(blog_type_id: number) : Observable<BlogType>{
-        //     return from(this.blogRepository.findOne({blog_type_id})).pipe(
-        //         map((blog: BlogType) => {
-        //             const {...result} = blog;
-        //             return result;
-        //         })
-        //         )
-        // }
+        findOne(lession_id: number) : Observable<Lession>{
+            return from(this.LessionRepository.findOne({lession_id})).pipe(
+                map((blog: Lession) => {
+                    const {...result} = blog;
+                    return result;
+                })
+                )
+        }
 
-        // deleteOne(id: number) : Observable<any>{
-        //     return from(this.blogRepository.delete(id));
-        // }
+        deleteOne(id: number) : Observable<any>{
+            return from(this.LessionRepository.delete(id));
+        }
 
-        // updateOne(blog_type_id: number, blogType: BlogType): Observable<any>{
-        //     return from(this.blogRepository.update(blog_type_id, blogType));
-        // }
+        updateOne(lession_id: number, lession: Lession): Observable<any>{
+            return from(this.LessionRepository.update(lession_id, lession));
+        }
 
  }

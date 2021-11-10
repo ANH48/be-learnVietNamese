@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
-import { Course } from '../models/course.interface';
-import { LoginDTO } from '../models/course.model';
+import { ListRole } from 'src/auth/role/role.enum';
+import { Course, CourseType } from '../models/course.interface';
+import { CourseDTO } from '../models/course.model';
 import { CourseService } from '../service/course.service';
 
 @ApiTags('course')
@@ -14,9 +15,16 @@ export class CourseController {
 
     constructor(private courseService: CourseService){ }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
+    @ApiQuery(
+        {name: 'Course Type', enum: CourseType},
+    )
+    @ApiBody({type: CourseDTO})
     create(@Body()course: Course): Observable<Course | Object> {
         return this.courseService.create(course).pipe(
             map((course: Course) => course),
@@ -29,20 +37,28 @@ export class CourseController {
         return this.courseService.findAll();
     }
 
-    // @Get(':BlogType_id')
-    // findOne(@Param() params) : Observable<BlogType>{
-    //     return this.blogTypeService.findOne(params.BlogType_id);
-    // }
+  
+    @Get(':course_id')
+    findOne(@Param('course_id') course_id: string) : Observable<Course>{
+        return this.courseService.findOne(Number(course_id));
+    }
 
-    // @Put('update/:BlogType_id')
-    // updateOne(@Param('BlogType_id')BlogType_id: string, @Body()BlogType: BlogType): Observable<BlogType>{
-    //     return this.blogTypeService.updateOne(Number(BlogType_id), BlogType);
-    // }
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN)
+    @Put('update/:course_id')
+    @ApiBody({type: CourseDTO})
+    updateOne(@Param('course_id')course_id: string, @Body()course: Course): Observable<Course>{
+        return this.courseService.updateOne(Number(course_id), course);
+    }
 
-    // @Delete('delete/:BlogType_id')
-    // deleteOne(@Param('BlogType_id') BlogType_id: string): Observable<any>{
-    //     return this.blogTypeService.deleteOne(Number(BlogType_id));
-    // }
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN)   
+    @Delete('delete/:course_id')
+    deleteOne(@Param('course_id') course_id: string): Observable<any>{
+        return this.courseService.deleteOne(Number(course_id));
+    }
     
 
 

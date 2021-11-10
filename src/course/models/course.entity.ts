@@ -1,5 +1,6 @@
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
+import { LessionEntity } from "src/lession/models/lession.entity";
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate } from "typeorm";
 import { CourseType } from "./course.interface";
 
@@ -32,6 +33,9 @@ export class CourseEntity {
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     course_update: Date;
+
+    @OneToMany(() => LessionEntity, lesion => lesion.lession_id)
+    lesion: LessionEntity;
 
     @BeforeUpdate()
     updateTimestamp(){

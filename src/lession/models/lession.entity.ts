@@ -1,6 +1,7 @@
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate } from "typeorm";
+import { CourseEntity } from "src/course/models/course.entity";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne } from "typeorm";
 // import { Lession } from "./lession.interface";
 
 @Entity({name: "lession"})
@@ -37,7 +38,8 @@ export class LessionEntity {
 
     // @Column({type: 'enum', enum: CourseType, default: CourseType.BEGINNER})
     // role: CourseType;
-
+    @ManyToOne(() => CourseEntity, course => course.course_id)
+    course: CourseEntity;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     lession_create: Date;

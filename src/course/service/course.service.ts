@@ -40,21 +40,21 @@ export class CourseService {
             )
         }
 
-        // findOne(blog_type_id: number) : Observable<BlogType>{
-        //     return from(this.blogRepository.findOne({blog_type_id})).pipe(
-        //         map((blog: BlogType) => {
-        //             const {...result} = blog;
-        //             return result;
-        //         })
-        //         )
-        // }
+        findOne(course_id: number) : Observable<Course>{
+            return from(this.courseEntity.findOne({course_id})).pipe(
+                map((blog: Course) => {
+                    const {...result} = blog;
+                    return result;
+                })
+                )
+        }
 
-        // deleteOne(id: number) : Observable<any>{
-        //     return from(this.blogRepository.delete(id));
-        // }
+        deleteOne(id: number) : Observable<any>{
+            return from(this.courseEntity.delete(id));
+        }
 
-        // updateOne(blog_type_id: number, blogType: BlogType): Observable<any>{
-        //     return from(this.blogRepository.update(blog_type_id, blogType));
-        // }
+        updateOne(course_id: number, course: Course): Observable<any>{
+            return from(this.courseEntity.update(course_id, course));
+        }
 
  }
