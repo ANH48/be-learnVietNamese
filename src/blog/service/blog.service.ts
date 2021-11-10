@@ -52,58 +52,66 @@ export class BlogService {
             )
         }
 
-    findOne(blog_id: number) : Observable<Blog>{
-        return from(this.blogRepository.findOne({blog_id})).pipe(
-            map((blog: Blog) => {
-                delete blog.author;
-                const {...result} = blog;
-                return result;
-            })
-            )
-    }
-
-    deleteOne(id: number) : Observable<any>{
-        return from(this.blogRepository.delete(id));
-    }
-    deleteOneCheckId(blog_id: number, idUser: number) : Observable<any>{
-        return from(this.blogRepository.findOne({blog_id})).pipe(
-            map((blog: Blog) => {
-                 if(idUser===blog.author) {
-                    return from(this.blogRepository.delete(blog_id));
-                 }
-                 else{
-                     const obj : any = {
-                        "statusCode": 401,
-                        "message": "Unauthorized"
-                     }
-                     return obj;
-                 }
-
-            })
-            )
-    }
-
-    updateOne(blog_id: number, blog: Blog): Observable<any>{
-        return from(this.blogRepository.update(blog_id, blog));
-    }
-    updateOneCheckId(blog_id: number, idUser: number, blog: Blog): Observable<any>{
-        return from(this.blogRepository.findOne({blog_id})).pipe(
-            map((blogItem: Blog) => {
-                 if(idUser===blogItem.author) {
+        findOne(blog_id: number) : Observable<Blog>{
+            return from(this.blogRepository.findOne({blog_id})).pipe(
+                map((blog: Blog) => {
+                    const {author,...result} = blog;
+                    return result;
+                })
+                )
+        }
+        updateLike(blog_id: number): Observable<any>{
+            return from(this.blogRepository.findOne({blog_id})).pipe(
+                map((blog: Blog) => {
+                    const {author,...result} = blog;
+                    blog.likes = blog.likes + 1;
                     return from(this.blogRepository.update(blog_id, blog));
-                 }
-                 else{
-                     const obj : any = {
-                        "statusCode": 401,
-                        "message": "Unauthorized"
-                     }
-                     return obj;
-                 }
+                })
+                )
 
-            })
-            )
-        
-    }
+        }
+        deleteOne(id: number) : Observable<any>{
+            return from(this.blogRepository.delete(id));
+        }
+        deleteOneCheckId(blog_id: number, idUser: number) : Observable<any>{
+            return from(this.blogRepository.findOne({blog_id})).pipe(
+                map((blog: Blog) => {
+                    if(idUser===blog.author) {
+                        return from(this.blogRepository.delete(blog_id));
+                    }
+                    else{
+                        const obj : any = {
+                            "statusCode": 401,
+                            "message": "Unauthorized"
+                        }
+                        return obj;
+                    }
+
+                })
+                )
+        }
+
+        updateOne(blog_id: number, blog: Blog): Observable<any>{
+            return from(this.blogRepository.update(blog_id, blog));
+        }
+        updateOneCheckId(blog_id: number, idUser: number, blog: Blog): Observable<any>{
+            return from(this.blogRepository.findOne({blog_id})).pipe(
+                map((blogItem: Blog) => {
+                    if(idUser===blogItem.author) {
+                        return from(this.blogRepository.update(blog_id, blog));
+                    }
+                    else{
+                        const obj : any = {
+                            "statusCode": 401,
+                            "message": "Unauthorized"
+                        }
+                        return obj;
+                    }
+
+                })
+                )
+            
+        }
 
  }
 

@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
-import { ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap, throwError } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { Blog } from '../models/blog.interface';
-import { LoginDTO } from '../models/blog.model';
+import { blogDTO } from '../models/blog.model';
 import { BlogService } from '../service/blog.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -35,10 +35,12 @@ export class BlogController {
     constructor(private blogService: BlogService){ }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
+    @ApiBody({ type: blogDTO})
     create(@Body()blog: Blog, @Request() req): Observable<Blog | Object> {
             return this.blogService.create(blog,req.user).pipe(
                 map((blog: Blog) => blog),
@@ -53,12 +55,27 @@ export class BlogController {
         return this.blogService.findAll();
     }
 
-    @Get(':blog_id')
-    findOne(@Param() params) : Observable<Blog>{
-        return this.blogService.findOne(params.blog_id);
+
+    @Get(':id')
+    // @ApiBody({ type: blogDTO})
+    findOne(@Param('id') id: string) : Observable<Blog>{
+        return this.blogService.findOne(Number(id));
     }
+
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN, ListRole.WRITTER,ListRole.MEMBER, ListRole.USER)
+    @Put('updateLike/:blog_id')
+    updateLike(@Param('blog_id')blog_id: string): Observable<Blog>{
+            return this.blogService.updateLike(Number(blog_id));
+        
+    }
+
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
+    @ApiBody({ type: blogDTO})
     @Put('update/:blog_id')
     updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog, @Request() req): Observable<Blog>{
         if(req.user.user.role!=ListRole.ADMIN){
@@ -71,6 +88,7 @@ export class BlogController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
     // @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Delete('delete/:blog_id')
     deleteOne(@Param('blog_id') blog_id: string,  @Request() req): Observable<any>{
@@ -82,6 +100,7 @@ export class BlogController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
