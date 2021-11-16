@@ -58,8 +58,10 @@ export class BlogController {
 
     @Get(':id')
     // @ApiBody({ type: blogDTO})
-    findOne(@Param('id') id: string) : Observable<Blog>{
-        return this.blogService.findOne(Number(id));
+    findOne(@Param('id') id: string) : Observable<any>{
+        this.blogService.updateView(Number(id)).subscribe();
+        return this.blogService.findOne(Number(id))
+
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

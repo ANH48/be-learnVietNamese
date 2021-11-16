@@ -1,7 +1,8 @@
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
+import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
 import { UserEntity } from "src/user/models/user.entity";
 
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate, OneToMany } from "typeorm";
 
 // import { UserRole } from "./blog.interface";
 
@@ -51,6 +52,9 @@ export class BlogEntity {
 
     @Column({default: 0})
     likes: number;
+
+    @Column({default: 0})
+    views: number;
 
     @BeforeUpdate()
     updateTimestamp(){

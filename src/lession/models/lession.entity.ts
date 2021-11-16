@@ -1,6 +1,7 @@
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
 import { CourseEntity } from "src/course/models/course.entity";
+import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne } from "typeorm";
 // import { Lession } from "./lession.interface";
 
@@ -30,6 +31,8 @@ export class LessionEntity {
     @Column( )
     lession_video: string;
 
+    @Column({default: 0})
+    views: number;
     // @Column( )
     // lession_vote: string;
 
