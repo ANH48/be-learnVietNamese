@@ -44,8 +44,9 @@ export class LessionService {
 
         findOne(lession_id: number) : Observable<Lession>{
             return from(this.LessionRepository.findOne({lession_id})).pipe(
-                map((blog: Lession) => {
-                    const {...result} = blog;
+                map((lesion: Lession) => {
+                    lesion.views = lesion.views + 1;
+                    const {...result} = lesion;
                     return result;
                 })
                 )
@@ -54,7 +55,15 @@ export class LessionService {
         deleteOne(id: number) : Observable<any>{
             return from(this.LessionRepository.delete(id));
         }
-
+        updateView(lession_id: number): Observable<any>{
+            return from(this.LessionRepository.findOne({lession_id})).pipe(
+                map((lession: Lession) => {
+                    const {...result} = lession;
+                    lession.views = lession.views + 1;
+                    return from(this.LessionRepository.update(lession_id, lession));
+                })
+                )
+        }
         updateOne(lession_id: number, lession: Lession): Observable<any>{
             return from(this.LessionRepository.update(lession_id, lession));
         }

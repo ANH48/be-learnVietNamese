@@ -10,6 +10,7 @@ export interface Blog {
     blog_video?: string;
     blog_keyword?: string;
     likes?:number;  
+    views: number;
     author?:number;
     blog_create?: Date;
     blog_update?: Date;

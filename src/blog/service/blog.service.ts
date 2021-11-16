@@ -55,6 +55,7 @@ export class BlogService {
         findOne(blog_id: number) : Observable<Blog>{
             return from(this.blogRepository.findOne({blog_id})).pipe(
                 map((blog: Blog) => {
+                    blog.views = blog.views + 1;
                     const {author,...result} = blog;
                     return result;
                 })
@@ -68,8 +69,18 @@ export class BlogService {
                     return from(this.blogRepository.update(blog_id, blog));
                 })
                 )
-
         }
+
+        updateView(blog_id: number): Observable<any>{
+            return from(this.blogRepository.findOne({blog_id})).pipe(
+                map((blog: Blog) => {
+                    const {author,...result} = blog;
+                    blog.views = blog.views + 1;
+                    return from(this.blogRepository.update(blog_id, blog));
+                })
+                )
+        }
+
         deleteOne(id: number) : Observable<any>{
             return from(this.blogRepository.delete(id));
         }

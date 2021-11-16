@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { ListRole } from 'src/auth/role/role.enum';
+import { Lession_save } from 'src/lession-save/models/lession-save.interface';
+import { Lession_saveService } from 'src/lession-save/service/lession-save.service';
 import { Lession } from '../models/lession.interface';
 import { LessionDTO } from '../models/lession.model';
 import { LessionService } from '../service/lession.service';
@@ -13,7 +15,11 @@ import { LessionService } from '../service/lession.service';
 @Controller('lession')
 export class LessionController {
 
-    constructor(private lessionService: LessionService){ }
+    constructor(
+        private lessionService: LessionService,
+        private lession_saveService: Lession_saveService,
+        
+        ){ }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
@@ -29,13 +35,16 @@ export class LessionController {
         );
     }
 
+    @ApiBearerAuth()
     @Get()
     findAll() : Observable<Lession[]>{
         return this.lessionService.findAll();
     }
 
+    @ApiBearerAuth()
     @Get(':lession_id')
     findOne(@Param('lession_id') lession_id: string) : Observable<Lession>{
+        this.lessionService.updateView(Number(lession_id)).subscribe();
         return this.lessionService.findOne(Number(lession_id));
     }
 
