@@ -42,7 +42,14 @@ export class UserEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     update: Date;
 
+    @Column({default: 0} )
+    blocked_user: number; 
 
+    @Column({default: 0})
+    count_error: number; 
+
+    @Column({nullable: true})
+    time_blocked: Date;
     // @OneToMany(() => Lession_saveEntity, lession_save => lession_save.lession_save_id)
     // lession_save: Lession_saveEntity;
 

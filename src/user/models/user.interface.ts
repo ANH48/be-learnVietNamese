@@ -10,6 +10,9 @@ export interface User {
     create: Date;
     update: Date;
     role?: UserRole;
+    blocked_user?: number; 
+    count_error?: number; 
+    time_blocked?: Date;
 }
 
 export enum UserRole {
