@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
@@ -48,9 +48,12 @@ export class UserService {
                 newUser.email = user.email;
                 newUser.password = passwordHash;
                 //newUser.role = 'user';
+                newUser.time_blocked = new Date;
+                newUser.blocked_user = 0;
+                newUser.count_error = 0;
                 return from(this.userRepository.save(newUser)).pipe(
                     map((user: User) => {
-                        const {password, tokenEmail, expired_token, ...result} = user;
+                        const {password, tokenEmail,blocked_user,count_error,expired_token, ...result} = user;
                         return result;
                     }),
                     catchError(err => throwError(()=> new Error(err)) )
@@ -77,7 +80,7 @@ export class UserService {
             return from(this.userRepository.findOne({id})).pipe(
                 map((user: User) => {
                     if(user){
-                        const {password,expired_token,tokenEmail, ...result} = user;
+                        const {password,expired_token,tokenEmail, blocked_user,count_error,time_blocked, ...result} = user;
                         return result;
                     }
                     else{
@@ -123,6 +126,30 @@ export class UserService {
         return from(this.userRepository.update(id, user));
     }
 
+    updateCountError(id: number, user: User): Observable<any>{
+        delete user.username;
+        delete user.email;
+        delete user.password;
+        delete user.tokenEmail;
+        delete user.expired_token;
+        delete user.role;
+        delete user.blocked_user;
+        delete user.time_blocked;
+        return from(this.userRepository.update(id, user));
+    }
+
+    updateTime_blocked(id: number, user: User): Observable<any>{
+        delete user.username;
+        delete user.email;
+        delete user.password;
+        delete user.tokenEmail;
+        delete user.expired_token;
+        delete user.role;
+        delete user.blocked_user;
+        delete user.count_error;
+        return from(this.userRepository.update(id, user));
+    }
+
     updateRoleOfUser(id: number, user: User): Observable<any>{
         return from(this.userRepository.update(id,user));
     }
@@ -131,13 +158,21 @@ export class UserService {
         if(user.password){
             try {
                 return this.validateUser(user.email, user.password, user.username).pipe(
-                    switchMap((user: User) => {
-                        if(user) {
-                            delete user.expired_token;
-                            delete user.tokenEmail;
-                            return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
-                        }else {
-                            return 'Wrong Credentials';
+                    switchMap((user: any) => {
+                        if(user == "0") {
+                            throw new UnauthorizedException;
+                        }
+                        else {
+                            if(user) {
+                                delete user.expired_token;
+                                delete user.tokenEmail;
+                                delete user.blocked_user;
+                                delete user.count_error;
+                                delete user.time_blocked;
+                                return this.authService.generateJWT(user).pipe(map((jwt: string) => jwt));
+                            }else {
+                                return 'Wrong Credentials';
+                            }
                         }
                     })
                 )
@@ -153,32 +188,68 @@ export class UserService {
        }
     }
 
-    validateUser(email: string, password: string, username: string): Observable<User> {
-        if(email){
+    validateUser(email: string, password: string, username: string): Observable<any> {
+        if(email && email!=""){
             return this.findByMail(email).pipe(
-                switchMap((user: User) => this.authService.comparePasswords(password, user.password).pipe(
-                    map((match: boolean) => {
-                        if(match) {
-                            const {password, ...result} = user;
-                            return result;
-                        }else{
-                         throw Error;
+                switchMap((user: User) => {
+                    if(!user)  {
+                        return "0";
+                    } 
+                    if(user.blocked_user == 1) throw new BadRequestException("User is blocked");
+                    let oldDay = user.time_blocked;
+                    let day = new Date;
+                    if(oldDay){
+                        if(day.getDay()===oldDay.getDay() && day.getMonth()===oldDay.getMonth() && day.getFullYear()===oldDay.getFullYear()){
+                            if(day.getHours()===oldDay.getHours()){
+                                const time =  oldDay.getMinutes() - day.getMinutes();
+                                if(time > 0){
+                                    throw new BadRequestException("User is blocked");
+                                }
+                            }
                         }
-                    })
-                ))
+                    }
+                    return this.authService.comparePasswords(password, user.password).pipe(
+                        map((match: boolean) => {
+                            if(match) {
+                                const {password, ...result} = user;
+                                user.count_error = 0;
+                                this.updateOne(user.id,user).subscribe();
+                                return result;
+                            }else{
+                                if(user.count_error==5) {
+                                    user.count_error = 5;
+                                    day.setMinutes(day.getMinutes() + 5);
+                                    user.time_blocked = day;
+                                    this.updateTime_blocked(user.id,user).subscribe();
+                                    throw new BadRequestException("User is blocked in 5 minutes");
+                                }
+                                else{
+                                    user.count_error = user.count_error + 1;
+                                }
+                                this.updateOne(user.id,user).subscribe();
+                             throw  new UnauthorizedException;
+                            }
+                        })
+                    )
+                })
              )
         }else{
             return this.findByUsername(username).pipe(
-                switchMap((user: User) => this.authService.comparePasswords(password, user.password).pipe(
-                    map((match: boolean) => {
-                        if(match) {
-                            const {password, ...result} = user;
-                            return result;
-                        }else{
-                         throw Error;
-                        }
-                    })
-                ))
+                switchMap((user: User) => {
+                    if(!user)  {
+                        return "0";
+                    } 
+                    return this.authService.comparePasswords(password, user.password).pipe(
+                        map((match: boolean) => {
+                            if(match) {
+                                const {password, ...result} = user;
+                                return result;
+                            }else{
+                             throw  new UnauthorizedException;;
+                            }
+                        })
+                    )
+                })
              )
         }
         

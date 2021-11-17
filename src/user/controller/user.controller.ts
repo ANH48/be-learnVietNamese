@@ -30,12 +30,12 @@ export class UserController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @Get('profile')
-    // getProfile(@Request() req) {
-    //     return req.user;
-    // }
-    getProfile(@Param('accesstoken') accesstoken: string) {
-        return accesstoken;
+    getProfile(@Request() req) {
+        return req.user;
     }
+    // getProfile(@Param('accesstoken') accesstoken: string) {
+    //     return accesstoken;
+    // }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
@@ -134,16 +134,24 @@ export class UserController {
     @ApiUnauthorizedResponse({description: 'Invalid credentials'})
     @ApiBody({ type: LoginDTO})
     login(@Body() user: User): Observable<Object> {
+        const obj: any = {
+            error: "invalid email or password"
+        }
+        if(!user) return obj;
+
         if((user.email && user.password) || (user.username && user.password)){
+            const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            const isEmail =  regularExpression.test(String(user.email).toLowerCase());
+            if(!isEmail && !user.username){
+                return obj;
+            }
+            if(!isEmail) user.email = null;
             return this.userService.login(user).pipe(
                 map((jwt: string) => {
                     return {access_token: jwt};
                 })
             )
         }else{
-            const obj: any = {
-                error: "invalid email or password"
-            }
             return obj;
         }
     }
