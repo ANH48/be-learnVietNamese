@@ -137,10 +137,9 @@ export class UserController {
         const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const isEmail =  regularExpression.test(String(user.email).toLowerCase());
         if(!isEmail) return  obj;
-        return this.userService.register(user).pipe(
-            map((user: User) => user),
-            catchError(err => of({error: err.message})) 
-        );
+            return this.userService.register(user).pipe(
+                map((user: User) => user) 
+            );
     }
 
     @Post('login')
