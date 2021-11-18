@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
@@ -17,7 +17,7 @@ export class UserService {
         @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
         private authService: AuthService
         ) {}
-     
+
     create(user: User): Observable<User> {
         return this.authService.hashPassword(user.password).pipe(
             switchMap((passwordHash: string) => {
@@ -160,7 +160,8 @@ export class UserService {
                 return this.validateUser(user.email, user.password, user.username).pipe(
                     switchMap((user: any) => {
                         if(user == "0") {
-                            throw new UnauthorizedException;
+                            throw new ForbiddenException('Username or email is existed')
+                            // throw new UnauthorizedException;
                         }
                         else {
                             if(user) {
@@ -227,25 +228,51 @@ export class UserService {
                                     user.count_error = user.count_error + 1;
                                 }
                                 this.updateOne(user.id,user).subscribe();
-                             throw  new UnauthorizedException;
+                             throw  new BadRequestException("Email or password wrong");
                             }
                         })
                     )
                 })
              )
         }else{
-            return this.findByUsername(username).pipe(
+            return this.findByMail(username).pipe(
                 switchMap((user: User) => {
                     if(!user)  {
                         return "0";
                     } 
+                    if(user.blocked_user == 1) throw new BadRequestException("User is blocked");
+                    let oldDay = user.time_blocked;
+                    let day = new Date;
+                    if(oldDay){
+                        if(day.getDay()===oldDay.getDay() && day.getMonth()===oldDay.getMonth() && day.getFullYear()===oldDay.getFullYear()){
+                            if(day.getHours()===oldDay.getHours()){
+                                const time =  oldDay.getMinutes() - day.getMinutes();
+                                if(time > 0){
+                                    throw new BadRequestException("User is blocked");
+                                }
+                            }
+                        }
+                    }
                     return this.authService.comparePasswords(password, user.password).pipe(
                         map((match: boolean) => {
                             if(match) {
                                 const {password, ...result} = user;
+                                user.count_error = 0;
+                                this.updateOne(user.id,user).subscribe();
                                 return result;
                             }else{
-                             throw  new UnauthorizedException;;
+                                if(user.count_error==5) {
+                                    user.count_error = 5;
+                                    day.setMinutes(day.getMinutes() + 5);
+                                    user.time_blocked = day;
+                                    this.updateTime_blocked(user.id,user).subscribe();
+                                    throw new BadRequestException("User is blocked in 5 minutes");
+                                }
+                                else{
+                                    user.count_error = user.count_error + 1;
+                                }
+                                this.updateOne(user.id,user).subscribe();
+                             throw new BadRequestException("Username or password wrong");;
                             }
                         })
                     )

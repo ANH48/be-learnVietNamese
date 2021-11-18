@@ -42,6 +42,12 @@ export class UserController {
     @hasRoles(UserRole.ADMIN)
     @Post('create')
     create(@Body()user: User): Observable<User | Object> {
+        const obj: any = {
+            error: "Invalid email"
+        }
+        const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const isEmail =  regularExpression.test(String(user.email).toLowerCase());
+        if(!isEmail) return  obj;
         return this.userService.create(user).pipe(
             map((user: User) => user),
             catchError(err => of({error: err.message})) 
@@ -97,6 +103,8 @@ export class UserController {
     @Patch('update/:id')
     @ApiBody({ type: UpdateUserDTO})
     updateOne(@Param('id') id: string, @Body() user: User, @Request() req): Observable<any>{
+        user.email = req.user.user.email;
+
         if(req.user.user.role===UserRole.ADMIN){
             return this.userService.updateOne(Number(id),user);
         }else{
@@ -123,6 +131,12 @@ export class UserController {
     @Post('register')
     @ApiBody({ type: RegisterUserDTO})
     register(@Body()user: User): Observable<User | Object> {
+        const obj: any = {
+            error: "Invalid email"
+        }
+        const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const isEmail =  regularExpression.test(String(user.email).toLowerCase());
+        if(!isEmail) return  obj;
         return this.userService.register(user).pipe(
             map((user: User) => user),
             catchError(err => of({error: err.message})) 
@@ -138,7 +152,6 @@ export class UserController {
             error: "invalid email or password"
         }
         if(!user) return obj;
-
         if((user.email && user.password) || (user.username && user.password)){
             const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             const isEmail =  regularExpression.test(String(user.email).toLowerCase());
