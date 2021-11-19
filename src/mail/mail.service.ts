@@ -8,7 +8,6 @@ export class MailService {
 
   async sendUserConfirmation(user: User, token: string) {
     const url = process.env.LOCALHOST+`users/confirmTokenEmail`;
-
     await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from

@@ -56,10 +56,11 @@ export class UserService {
                         const {password, tokenEmail,blocked_user,count_error,expired_token, ...result} = user;
                         return result;
                     }),
-                    catchError(err => throwError(()=> new Error(err)) )
+                    catchError(err => {throw new BadRequestException("User or email existed")}) 
                 )
             })
         )
+        // throw new BadRequestException("User is blocked");
         // return from(this.userRepository.save(user));
     }
 
@@ -235,7 +236,7 @@ export class UserService {
                 })
              )
         }else{
-            return this.findByMail(username).pipe(
+            return this.findByUsername(username).pipe(
                 switchMap((user: User) => {
                     if(!user)  {
                         return "0";
@@ -315,7 +316,7 @@ export class UserService {
                     const time =  oldDay.getMinutes() - day.getMinutes();
                     if(time > 0){
                         isExpired = false;
-                        return user;
+                        return 0;
                     }
                 }
             }
@@ -332,7 +333,8 @@ export class UserService {
         // console.log(userId.expired_token,"new");
         
         this.userRepository.update(userId.id,userId)
-        return user;
+
+        return userId;
     }
     else{
         throw new BadRequestException('Username or Email do not exist ');

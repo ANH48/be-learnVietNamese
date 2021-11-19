@@ -137,10 +137,9 @@ export class UserController {
         const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const isEmail =  regularExpression.test(String(user.email).toLowerCase());
         if(!isEmail) return  obj;
-        return this.userService.register(user).pipe(
-            map((user: User) => user),
-            catchError(err => of({error: err.message})) 
-        );
+            return this.userService.register(user).pipe(
+                map((user: User) => user) 
+            );
     }
 
     @Post('login')
@@ -173,14 +172,22 @@ export class UserController {
     @Post('forgotpassword')
     @ApiBody({ type: ForgotPasswordDTO})
     async forgetpassword(@Body() user: User){
-        // create user in db
-        // ...
-        // send confirmation mail
+        const obj: any = {
+            error: "Token send to email, Please check your email"
+        } 
+        const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const isEmail =  regularExpression.test(String(user.email).toLowerCase());
+        if(!isEmail){
+            obj.error = "Email error ";
+            return obj;
+        }
         const dbUser = await this.userService.isEmail(user);
-        if(dbUser){
-            await this.mailService.sendUserConfirmation(user, user.tokenEmail)
+        if(dbUser!=0&&dbUser){
+            await this.mailService.sendUserConfirmation(dbUser, dbUser.tokenEmail);
+            obj.error = "Token send to email, Please check your email";
+            return obj
         }else{
-            return dbUser;
+            return obj;
         }
         
     }
@@ -190,6 +197,15 @@ export class UserController {
     async confirmEmailToken(@Body() user: User){
         const email = user.email;
         const tokenEmail = user.tokenEmail;
+        const obj: any = {
+            error: "Token send to email, Please check your email"
+        } 
+        const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const isEmail =  regularExpression.test(String(user.email).toLowerCase());
+        if(!isEmail){
+            obj.error = "Email error ";
+            return obj;
+        }
         const isUser = await this.userService.checkTokenEmail(email,tokenEmail);
         if(isUser){
             await this.mailService.sendResetPassword(user, isUser.password);
