@@ -316,7 +316,7 @@ export class UserService {
                     const time =  oldDay.getMinutes() - day.getMinutes();
                     if(time > 0){
                         isExpired = false;
-                        return user;
+                        return 0;
                     }
                 }
             }
@@ -333,7 +333,8 @@ export class UserService {
         // console.log(userId.expired_token,"new");
         
         this.userRepository.update(userId.id,userId)
-        return user;
+
+        return userId;
     }
     else{
         throw new BadRequestException('Username or Email do not exist ');
