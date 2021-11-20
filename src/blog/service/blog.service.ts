@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { BadRequestException, ExecutionContext, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type } from 'os';
@@ -6,6 +6,7 @@ import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
 // import { UserEntity } from 'src/user/models/user.entity';
 import { UserEntity } from 'src/user/models/user.entity';
+import { User } from 'src/user/models/user.interface';
 import { Repository } from 'typeorm';
 import { BlogEntity } from '../models/blog.entity';
 import { Blog } from '../models/blog.interface';
@@ -19,9 +20,7 @@ export class BlogService {
         @InjectRepository(BlogEntity) private readonly blogRepository: Repository<BlogEntity>,
         ) {}
 
-        create(blog: Blog, user: any): Observable<Blog> {
-            
-    
+        create(blog: Blog, user: any): Observable<any> {
             const newBlog = new BlogEntity();
             newBlog.blog_title = blog.blog_title;
             newBlog.blog_description = blog.blog_description;
@@ -30,41 +29,60 @@ export class BlogService {
             newBlog.blog_video = blog.blog_video;
             newBlog.blog_avatar = blog.blog_avatar;
             newBlog.blog_keyword = blog.blog_keyword;
-            newBlog.author = user?.user.id;
+            newBlog.author = user.user;
 
             return from(this.blogRepository.save(newBlog)).pipe(
                 map((blog: Blog) => {
-                    const { ...result} = blog;
-                     return result;
+                    const {...result} = blog;
+                    return result;
                 }),
                 catchError(err => throwError(()=> new Error(err)) )
             )
-            // return from(this.userRepository.save(user));
+
         }
+
+
         findAll() : Observable<Blog[]>{
-            return from(this.blogRepository.find()).pipe(
-                map((blogs: Blog[]) => {
-                    blogs.map((blog) => {
-                      delete blog.author;
-                    })
-                    return blogs;
-                })
-            )
+            return from(this.blogRepository.createQueryBuilder("blogs")
+            .leftJoinAndSelect("blogs.author", "author")
+            // .where("bill.accountBill LIKE :accountBill", {accountBill})
+            // .andWhere("author.id = :userId", {userId: author.id})
+            .select(["blogs","author.username", "author.name"])
+            .execute());
         }
 
         findOne(blog_id: number) : Observable<Blog>{
-            return from(this.blogRepository.findOne({blog_id})).pipe(
-                map((blog: Blog) => {
-                    blog.views = blog.views + 1;
-                    const {author,...result} = blog;
+            // return from(this.blogRepository.findOne(
+            //     {blog_id},
+            //     {relations: ['author'],}
+            // ))
+            return from(this.blogRepository.createQueryBuilder("blogs")
+            .where({blog_id})
+            .leftJoinAndSelect("blogs.author", "author")
+            // .where("bill.accountBill LIKE :accountBill", {accountBill})
+            // .andWhere("author.id = :userId", {userId: author.id})
+            .select(["blogs","author.username", "author.name"])
+            .execute())
+            .pipe(
+                map((blog: any) => {
+                    if(!blog || blog === []) throw new BadRequestException("Blog does not exist ");
+                    blog.map((item: any) => {
+                        if(!item.blogs_blog_id) throw new BadRequestException("Blog does not exist ");
+                        item.blogs_views = item.blogs_views  + 1;
+                        // const {...result} = item;
+                        // return item;
+                    })
+                    // blog.views = blog.views + 1;
+                    const {...result} = blog;
                     return result;
+
                 })
                 )
         }
         updateLike(blog_id: number): Observable<any>{
             return from(this.blogRepository.findOne({blog_id})).pipe(
                 map((blog: Blog) => {
-                    const {author,...result} = blog;
+                    if(!blog) throw new BadRequestException("Blog does not exist ");
                     blog.likes = blog.likes + 1;
                     return from(this.blogRepository.update(blog_id, blog));
                 })
@@ -74,9 +92,13 @@ export class BlogService {
         updateView(blog_id: number): Observable<any>{
             return from(this.blogRepository.findOne({blog_id})).pipe(
                 map((blog: Blog) => {
-                    const {author,...result} = blog;
-                    blog.views = blog.views + 1;
-                    return from(this.blogRepository.update(blog_id, blog));
+                    if(!blog) return;
+                    else{
+                        const {...result} = blog;
+                        blog.views = blog.views + 1;
+                        return from(this.blogRepository.update(blog_id, blog));
+                    }
+                  
                 })
                 )
         }
@@ -85,9 +107,9 @@ export class BlogService {
             return from(this.blogRepository.delete(id));
         }
         deleteOneCheckId(blog_id: number, idUser: number) : Observable<any>{
-            return from(this.blogRepository.findOne({blog_id})).pipe(
+            return from(this.blogRepository.findOne({blog_id},{relations: ["author"]})).pipe(
                 map((blog: Blog) => {
-                    if(idUser===blog.author) {
+                    if(idUser===blog.author.id) {
                         return from(this.blogRepository.delete(blog_id));
                     }
                     else{
@@ -102,13 +124,14 @@ export class BlogService {
                 )
         }
 
-        updateOne(blog_id: number, blog: Blog): Observable<any>{
+        updateOne(blog_id: number, blog: Blog, user: UserEntity): Observable<any>{
+            blog.author = user;
             return from(this.blogRepository.update(blog_id, blog));
         }
         updateOneCheckId(blog_id: number, idUser: number, blog: Blog): Observable<any>{
-            return from(this.blogRepository.findOne({blog_id})).pipe(
+            return from(this.blogRepository.findOne({blog_id},{relations: ["author"]})).pipe(
                 map((blogItem: Blog) => {
-                    if(idUser===blogItem.author) {
+                    if(idUser===blogItem.author.id) {
                         return from(this.blogRepository.update(blog_id, blog));
                     }
                     else{

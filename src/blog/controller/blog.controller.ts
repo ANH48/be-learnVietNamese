@@ -49,7 +49,6 @@ export class BlogController {
 
     }
 
-
     @Get()
     findAll() : Observable<Blog[]>{
         return this.blogService.findAll();
@@ -59,7 +58,11 @@ export class BlogController {
     @Get(':id')
     // @ApiBody({ type: blogDTO})
     findOne(@Param('id') id: string) : Observable<any>{
-        this.blogService.updateView(Number(id)).subscribe();
+        try {
+            this.blogService.updateView(Number(id)).subscribe();
+        } catch (error) {
+             throw new Error("Blog does not exist");
+        }
         return this.blogService.findOne(Number(id))
 
     }
@@ -81,17 +84,17 @@ export class BlogController {
     @Put('update/:blog_id')
     updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog, @Request() req): Observable<Blog>{
         if(req.user.user.role!=ListRole.ADMIN){
-            blog.author = req.user.user.id;
+            // blog.author = req.user.user.id;
             return this.blogService.updateOneCheckId(Number(blog_id),Number(req.user.user.id) ,blog);
         }else{
-            return this.blogService.updateOne(Number(blog_id), blog);
+            return this.blogService.updateOne(Number(blog_id), blog, req.user.user);
 
         }
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    // @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Delete('delete/:blog_id')
     deleteOne(@Param('blog_id') blog_id: string,  @Request() req): Observable<any>{
         if(req.user.user.role!=ListRole.ADMIN){

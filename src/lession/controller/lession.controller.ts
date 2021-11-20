@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
@@ -10,6 +10,24 @@ import { Lession_saveService } from 'src/lession-save/service/lession-save.servi
 import { Lession } from '../models/lession.interface';
 import { LessionDTO } from '../models/lession.model';
 import { LessionService } from '../service/lession.service';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path = require('path');
+import { join } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads/lession',
+        filename: (req, file, cb) => {
+            const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+
+            cb(null, `${filename}${extension}`)
+        }
+    })
+
+}
+
 
 @ApiTags('lession')
 @Controller('lession')
@@ -62,6 +80,27 @@ export class LessionController {
     @Delete('delete/:lession_id')
     deleteOne(@Param('lession_id') lession_id: string): Observable<any>{
         return this.lessionService.deleteOne(Number(lession_id));
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file', storage))
+    uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
+        // const blog: Blog = req.blog;
+
+        // blog.blog_avatar = file.filename;
+        // return this.blogService.updateOne(blog.blog_id, blog).pipe(
+        //     tap((blog: Blog) => console.log(blog)),
+        //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
+        // )
+        return of({imagePath: file.filename});
+    }
+
+    @Get('blogs-image/:imagename')
+    findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
+        return of(res.sendFile(join(process.cwd(), 'upload/lession/' + imagename)));
     }
     
 
