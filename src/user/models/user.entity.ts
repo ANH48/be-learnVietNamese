@@ -25,6 +25,9 @@ export class UserEntity {
     @Column({type: 'enum', enum: UserRole, default: UserRole.USER})
     role: UserRole;
 
+    @OneToMany(() => BlogEntity, (blog: BlogEntity) => blog.author)
+    public blogs: BlogEntity[];
+
     @BeforeInsert()
     emailToLowerCase(){
         this.email = this.email.toLowerCase()

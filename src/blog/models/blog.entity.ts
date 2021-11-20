@@ -40,9 +40,8 @@ export class BlogEntity {
     //     this.email = this.email.toLowerCase()
     // }
 
-    @Column()
-    author: number;
-
+    @ManyToOne(() => UserEntity, (user: UserEntity) => user.blogs)
+    public author: UserEntity;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_create: Date;

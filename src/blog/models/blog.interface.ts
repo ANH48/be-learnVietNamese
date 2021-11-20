@@ -9,9 +9,9 @@ export interface Blog {
     blog_avatar?: string;
     blog_video?: string;
     blog_keyword?: string;
+    author?:UserEntity;
     likes?:number;  
     views: number;
-    author?:number;
     blog_create?: Date;
     blog_update?: Date;
 }
