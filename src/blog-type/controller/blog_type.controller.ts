@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
@@ -17,12 +17,12 @@ export class BlogTypeController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN,ListRole.MEMBER)
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
     @ApiBody({type: BlogTypeDTO})
-    create(@Body()blogType: BlogType): Observable<BlogType | Object> {
+    create(@Body()blogType: BlogType, @Request() req): Observable<BlogType | Object> {
         return this.blogTypeService.create(blogType).pipe(
             map((BlogType: BlogType) => BlogType),
             catchError(err => of({error: err.message})) 
@@ -30,7 +30,7 @@ export class BlogTypeController {
     }
 
     @Get()
-    findAll() : Observable<BlogType[]>{
+    findAll(@Body()filter: any) : Observable<BlogType[]>{
         return this.blogTypeService.findAll();
     }
 
@@ -41,7 +41,7 @@ export class BlogTypeController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN,ListRole.MEMBER)
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Put('update/:BlogType_id')
     updateOne(@Param('BlogType_id')BlogType_id: string, @Body()BlogType: BlogType): Observable<BlogType>{
         return this.blogTypeService.updateOne(Number(BlogType_id), BlogType);
@@ -49,7 +49,7 @@ export class BlogTypeController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN,ListRole.MEMBER)
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
     @Delete('delete/:BlogType_id')
     deleteOne(@Param('BlogType_id') BlogType_id: string): Observable<any>{
         return this.blogTypeService.deleteOne(Number(BlogType_id));

@@ -33,7 +33,7 @@ export class CourseService {
             // return from(this.userRepository.save(user));
         }
         findAll() : Observable<Course[]>{
-            return from(this.courseEntity.find()).pipe(
+            return from(this.courseEntity.find({relations: ["lesion"]})).pipe(
                 map((course: Course[]) => {
                     return course;
                 })
@@ -41,7 +41,7 @@ export class CourseService {
         }
 
         findOne(course_id: number) : Observable<Course>{
-            return from(this.courseEntity.findOne({course_id})).pipe(
+            return from(this.courseEntity.findOne({course_id},{relations: ["lesion"]})).pipe(
                 map((blog: Course) => {
                     const {...result} = blog;
                     return result;

@@ -1,6 +1,6 @@
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne } from "typeorm";
 
 @Entity({name: "blog_type"})
 export class BlogTypeEntity {
@@ -18,6 +18,11 @@ export class BlogTypeEntity {
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_update: Date;
+
+
+    @OneToMany(() => BlogEntity, (blog_type: BlogEntity) => blog_type.blogType)
+    public blogs: BlogEntity[];
+
 
     @BeforeUpdate()
     updateTimestamp(){

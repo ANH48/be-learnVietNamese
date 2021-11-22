@@ -2,6 +2,7 @@ import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
 import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
+import { LessionEntity } from "src/lession/models/lession.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 
@@ -27,6 +28,9 @@ export class UserEntity {
 
     @OneToMany(() => BlogEntity, (blog: BlogEntity) => blog.author)
     public blogs: BlogEntity[];
+
+    @OneToMany(() => LessionEntity, (lession: LessionEntity) => lession.author)
+    public lessions: LessionEntity[];
 
     @BeforeInsert()
     emailToLowerCase(){
