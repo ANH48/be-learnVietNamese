@@ -2,6 +2,7 @@ import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
 import { CourseEntity } from "src/course/models/course.entity";
 import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
+import { UserEntity } from "src/user/models/user.entity";
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne } from "typeorm";
 // import { Lession } from "./lession.interface";
 
@@ -41,8 +42,17 @@ export class LessionEntity {
 
     // @Column({type: 'enum', enum: CourseType, default: CourseType.BEGINNER})
     // role: CourseType;
-    @ManyToOne(() => CourseEntity, course => course.course_id)
-    course: CourseEntity;
+
+    @ManyToOne(() => CourseEntity, courseType => courseType.lesion)
+    public courseType: CourseEntity;
+
+    @ManyToOne(() => UserEntity, (user: UserEntity) => user.lessions)
+    public author: UserEntity;
+
+    // @ManyToOne(() => Lession_saveEntity, (lession_save: Lession_saveEntity) => lession_save.lession)
+    // public lession_save: UserEntity;
+
+    
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     lession_create: Date;

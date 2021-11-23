@@ -46,20 +46,19 @@ export class LessionController {
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
     @ApiBody({type: LessionDTO})
-    create(@Body()lession: Lession): Observable<Lession | Object> {
-        return this.lessionService.create(lession).pipe(
+    create(@Body()lession: Lession, @Request() req): Observable<Lession | Object> {
+        return this.lessionService.create(lession,req.user.user).pipe(
             map((Lession: Lession) => Lession),
             catchError(err => of({error: err.message})) 
         );
     }
 
-    @ApiBearerAuth()
+    // @ApiBearerAuth()
     @Get()
     findAll() : Observable<Lession[]>{
         return this.lessionService.findAll();
     }
 
-    @ApiBearerAuth()
     @Get(':lession_id')
     findOne(@Param('lession_id') lession_id: string) : Observable<Lession>{
         this.lessionService.updateView(Number(lession_id)).subscribe();
@@ -68,18 +67,42 @@ export class LessionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
+    @Get('users/:lession_id')
+    findOneUser(@Param('lession_id') lession_id: string, @Request() req) : Observable<Lession>{
+        // this.lession_saveService.create_lession(Number(lession_id)).subscribe();
+        if(req.user){
+            this.lession_saveService.create_lession(Number(lession_id),req.user.user).subscribe();
+        }
+        this.lessionService.updateView(Number(lession_id)).subscribe();
+        return this.lessionService.findOne(Number(lession_id));
+    }
+
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
     @Put('update/:lession_id')
-    updateOne(@Param('lession_id')lession_id: string, @Body()lession: Lession): Observable<Lession>{
-        return this.lessionService.updateOne(Number(lession_id), lession);
+    updateOne(@Param('lession_id')lession_id: string, @Body()lession: Lession, @Request() req): Observable<Lession>{
+        if(req.user.user.role!=ListRole.ADMIN){
+            // blog.author = req.user.user.id;
+            return this.lessionService.updateOneCheckId(Number(lession_id),Number(req.user.user.id) ,lession);
+        }else{
+            return this.lessionService.updateOne(Number(lession_id), lession, req.user.user);
+
+        }
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
     @Delete('delete/:lession_id')
-    deleteOne(@Param('lession_id') lession_id: string): Observable<any>{
-        return this.lessionService.deleteOne(Number(lession_id));
+    deleteOne(@Param('lession_id') lession_id: string,  @Request() req): Observable<any>{
+        // return this.lessionService.deleteOne(Number(lession_id));
+        if(req.user.user.role!=ListRole.ADMIN){
+            return this.lessionService.deleteOneCheckId(Number(lession_id),Number(req.user.user.id))
+        }else{
+            return this.lessionService.deleteOne(Number(lession_id))
+        }
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

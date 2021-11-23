@@ -1,8 +1,9 @@
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
-import { BlogEntity } from "src/blog/models/blog.entity";
+import { LessionEntity } from "src/lession/models/lession.entity";
+// import { BlogEntity } from "src/blog/models/blog.entity";
 import { UserEntity } from "src/user/models/user.entity";
 
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate } from "typeorm";
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, ManyToOne, BeforeUpdate, OneToMany } from "typeorm";
 
 // import { UserRole } from "./blog.interface";
 
@@ -12,18 +13,25 @@ export class Lession_saveEntity {
     lession_save_id: number; 
 
     // @ManyToOne(() => UserEntity, user => user.id)
-    @Column({unique: true} )
+    @Column()
     user_id: number;
+
+    @Column()
+    lession_id?:number;
+
+    // @ManyToOne(() => UserEntity, (user: UserEntity) => user.lession_save)
+    // public author: UserEntity;
+
 
 
     // @ManyToOne(() => BlogTypeEntity, blogType => blogType.blog_type_id)
     // blogType_id: BlogTypeEntity;
 
-    // @ManyToOne(() => BlogEntity, blog => blog.blog_id)
-    // blog_id: BlogTypeEntity;
+    // @OneToMany(() => LessionEntity, lession => lession.lession_save)
+    // public lession: LessionEntity[];
 
-    @Column()
-    list_lession_id?:string;
+    // @Column()
+    // lession_id?:string;
 
     // @BeforeInsert()
     // emailToLowerCase(){
@@ -32,14 +40,14 @@ export class Lession_saveEntity {
 
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
-    blog_create: Date;
+    lession_save_create: Date;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
-    blog_update: Date;
+    lession_save_update: Date;
 
     @BeforeUpdate()
     updateTimestamp(){
-        this.blog_update = new Date; 
+        this.lession_save_update = new Date; 
     }
 
 }

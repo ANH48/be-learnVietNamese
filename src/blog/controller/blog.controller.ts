@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res, Query } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap, throwError } from 'rxjs';
@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
 import { ListRole } from 'src/auth/role/role.enum';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 export const storage = {
     storage: diskStorage({
@@ -42,6 +43,7 @@ export class BlogController {
     @ApiForbiddenResponse({description: 'Forbidden'})
     @ApiBody({ type: blogDTO})
     create(@Body()blog: Blog, @Request() req): Observable<Blog | Object> {
+        
             return this.blogService.create(blog,req.user).pipe(
                 map((blog: Blog) => blog),
                 catchError(err => of({error: err.message})) 
@@ -50,9 +52,20 @@ export class BlogController {
     }
 
     @Get()
-    findAll() : Observable<Blog[]>{
-        return this.blogService.findAll();
+    findAll(@Query('page') page: number = 1 ,@Query('limit') limit: number = 10 ) : Observable<Blog[]>{
+        limit = limit > 100 ? 100 : limit;
+        let filter = {
+            limit: limit,
+            page: page
+        }
+
+        return this.blogService.findAll({page: Number(page), limit: Number(limit), route: 'https://localhost:3000/api/blogs'});
     }
+    // index( @Query('page') page: number = 1 ,@Query('limit') limit: number = 10 ) : Observable<Pagination<Blog>>{
+    //     limit = limit > 100 ? 100 : limit;
+
+        // return this.blogService.paginate({page: Number(page), limit: Number(limit), route: 'https://localhost:3000/api/blogs'});
+    // }
 
 
     @Get(':id')

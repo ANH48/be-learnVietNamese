@@ -18,7 +18,8 @@ export class CourseEntity {
     // emailToLowerCase(){
     //     this.email = this.email.toLowerCase()
     // }
-    @Column( {unique: true} )
+    // {unique: true}
+    @Column()
     course_keywords: string;
 
     // @Column( {type: true} )
@@ -34,8 +35,9 @@ export class CourseEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     course_update: Date;
 
-    @OneToMany(() => LessionEntity, lesion => lesion.lession_id)
-    lesion: LessionEntity;
+    @OneToMany(() => LessionEntity, lesion => lesion.courseType)
+    public lesion: LessionEntity[];
+
 
     @BeforeUpdate()
     updateTimestamp(){

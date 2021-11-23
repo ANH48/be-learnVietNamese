@@ -5,6 +5,7 @@ import { type } from 'os';
 import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
 import { LessionEntity } from 'src/lession/models/lession.entity';
+import { Lession } from 'src/lession/models/lession.interface';
 import { LessionDTO } from 'src/lession/models/lession.model';
 // import { UserEntity } from 'src/user/models/user.entity';
 import { UserEntity } from 'src/user/models/user.entity';
@@ -21,51 +22,101 @@ export class Lession_saveService {
         @InjectRepository(Lession_saveEntity) private readonly lession_saveRepository: Repository<Lession_saveEntity>,
         ) {}
 
-        create_lession(list_lession_id: JSON, user: any): Observable<any> {
+        create_lession(lession_id: number, user: any): Observable<any> {
             const newLession = new Lession_saveEntity();
-            newLession.user_id = user.user.id;
-            newLession.list_lession_id = JSON.stringify(list_lession_id);
-            // newLession.list_blog_id = lession.list_lession_id;
-            return from(this.lession_saveRepository.save(newLession)).pipe(
-                map((lession_item: Lession_saveEntity) => {
-                    const { ...result} = lession_item;
-                     return result;
-                }),
-                catchError(err => throwError(()=> new Error(err)) )
+            newLession.user_id = user.id;
+            newLession.lession_id = lession_id;
+
+           return this.findOne(user.id).pipe(
+                map((lession_save: Lession_saveEntity[]) => {
+                    if(lession_save){
+                        // console.log(lession_save)
+                        let isUser = false;
+                        lession_save.map((item_lesion: Lession_saveEntity) => {
+                            if(item_lesion.user_id === user.id ){
+                                if(item_lesion.lession_id === lession_id ){
+                                    isUser = true;
+                                    return;
+                                }
+                            }
+                        })
+                        if(isUser) return;
+                        // if(lession_save.lession_id === lession_id){
+                        //     return;
+                        // }
+                        return from(this.lession_saveRepository.save(newLession));
+
+                    }else{
+                        return from(this.lession_saveRepository.save(newLession));
+                    }
+                })
             )
-            // return from(this.userRepository.save(user));
+
         }
 
         updateOne(list_lession_id: number, lession: Lession_save): Observable<any>{
             return from(this.lession_saveRepository.update(list_lession_id, lession));
         }
 
-        findAll() : Observable<Lession_save[]>{
-            return from(this.lession_saveRepository.find()).pipe(
-                map((blogs: Lession_save[]) => {
-                    blogs.map((blog) => {
-                    //   delete blog.author;
-                    })
-                    return blogs;
+        findAll(user_id: number) : Observable<any>{
+            return this.findOne(user_id).pipe(
+                map((lession_save: Lession_saveEntity[]) => {
+                    let array_lession = [];
+                    if(lession_save){
+                        // console.log(lession_save)
+                        // let isUser = false;
+                        lession_save.map((item_lesion: Lession_saveEntity) => {
+                            if(item_lesion.user_id === user_id ){
+                                let obj = {
+                                    lession_id: item_lesion.lession_id
+                                }
+                                array_lession.push(obj);
+                            }
+                        })
+                        let lession_save_obj = {
+                            user_id: user_id,
+                            list_lession: array_lession
+                        }
+                        return lession_save_obj;
+                        // if(lession_save.lession_id === lession_id){
+                        //     return;
+                        // }
+
+                    }
+                    else {
+                        return [];
+                    }
                 })
             )
+
         }
 
         findOne(user_id: number) : Observable<any>{
             return from(this.findByUserId(user_id)).pipe(
-                map((lession_item: Lession_saveEntity) => {
-                    const {...result} = lession_item;
-                    return result;
+                map((lession_item: Lession_saveEntity[]) => {
+                    // console.log(lession_item)
+                    // const {...result} = lession_item;
+                    return lession_item;
                 })
                 )
         }
 
         findByUserId(user_id: number): Observable<any> {
-            try {
-                return from(this.lession_saveRepository.findOne({user_id}))
-            } catch (error) {
-                return error;
-            }
+            // try {
+            //     return from(this.lession_saveRepository.findOne({user_id}))
+            // } catch (error) {
+            //     return error;
+            // }
+            return from(this.lession_saveRepository.createQueryBuilder("lession_save")
+            .where({user_id})
+            // .leftJoinAndSelect("lession.author", "author")
+            // .where("lession.lession_keyword LIKE :keyword", {keyword: '%' + filter.keyword + '%'})
+            // .andWhere("author.id = :userId", {userId: author.id})
+            // .leftJoinAndSelect("lession.courseType","courseType")
+            .select(["lession_save"])
+            .getMany()
+            // .execute()
+            )
            
         }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res, BadRequestException } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap, throwError } from 'rxjs';
@@ -22,32 +22,38 @@ export class Lession_saveController {
 
     constructor(private lession_saveService: Lession_saveService){ }
 
+    // @UseGuards(JwtAuthGuard, RolesGuard)
+    // @ApiBearerAuth()
+    // @hasRoles(ListRole.ADMIN, ListRole.WRITTER, ListRole.USER, ListRole.MEMBER)
+    // @Post('create-list_lession_id')
+    // @ApiCreatedResponse({description: "Create date with post"})
+    // @ApiForbiddenResponse({description: 'Forbidden'})
+    // @ApiBody({ type: Lession_saveDTO})
+    // create_lession(@Body()lession_save: JSON, @Request() req): Observable<Lession_save | Object> {
+    //         return this.lession_saveService.create_lession(lession_save,req.user).pipe(
+    //             map((lession_save: Lession_save) => lession_save),
+    //             catchError(err => of({error: err.message})) 
+    //         );
+    // }
+
+
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN, ListRole.WRITTER, ListRole.USER, ListRole.MEMBER)
-    @Post('create-list_lession_id')
-    @ApiCreatedResponse({description: "Create date with post"})
-    @ApiForbiddenResponse({description: 'Forbidden'})
-    @ApiBody({ type: Lession_saveDTO})
-    create_lession(@Body()lession_save: JSON, @Request() req): Observable<Lession_save | Object> {
-            return this.lession_saveService.create_lession(lession_save,req.user).pipe(
-                map((lession_save: Lession_save) => lession_save),
-                catchError(err => of({error: err.message})) 
-            );
-    }
-
-
     @Get()
-    findAll() : Observable<Lession_save[]>{
-        return this.lession_saveService.findAll();
+    findAll( @Request() req) : Observable<Lession_save[]>{
+        if(req.user){
+            return this.lession_saveService.findAll(Number(req.user.user.id));
+        }
+        throw new BadRequestException("Forbiden User")
     }
 
 
-    @Get('/:id')
-    // @ApiBody({ type: blogDTO})
-    findOne(@Param('id') id: string) : Observable<Lession_save>{
-        return this.lession_saveService.findOne(Number(id));
-    }
+    // @Get('/:id')
+    // // @ApiBody({ type: blogDTO})
+    // findOne(@Param('id') id: string) : Observable<Lession_save>{
+    //     return this.lession_saveService.findOne(Number(id));
+    // }
 
 
     // @UseGuards(JwtAuthGuard, RolesGuard)

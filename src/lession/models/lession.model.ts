@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { type } from "os";
+import { CourseEntity } from "src/course/models/course.entity";
 
 export class LessionDTO {
     @ApiProperty({type: String, description: 'lession_name'})
@@ -13,4 +14,7 @@ export class LessionDTO {
 
     @ApiProperty({type: String, description: 'lession_video'})
     lession_video:string;
+
+    @ApiProperty({type: CourseEntity, description: 'lession_courseType'})
+    courseType?:CourseEntity;
 }

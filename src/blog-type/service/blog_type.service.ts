@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type } from 'os';
@@ -32,7 +32,7 @@ export class BlogTypeService {
             // return from(this.userRepository.save(user));
         }
         findAll() : Observable<BlogType[]>{
-            return from(this.blogRepository.find()).pipe(
+            return from(this.blogRepository.find({relations: ["blogs"]})).pipe(
                 map((blog: BlogType[]) => {
                     return blog;
                 })
@@ -40,7 +40,7 @@ export class BlogTypeService {
         }
 
     findOne(blog_type_id: number) : Observable<BlogType>{
-        return from(this.blogRepository.findOne({blog_type_id})).pipe(
+        return from(this.blogRepository.findOne({blog_type_id},{relations: ["blogs"]})).pipe(
             map((blog: BlogType) => {
                 const {...result} = blog;
                 return result;
