@@ -59,12 +59,24 @@ export class LessionController {
         return this.lessionService.findAll();
     }
 
-    // @ApiBearerAuth()
     @Get(':lession_id')
     findOne(@Param('lession_id') lession_id: string) : Observable<Lession>{
         this.lessionService.updateView(Number(lession_id)).subscribe();
         return this.lessionService.findOne(Number(lession_id));
     }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @Get('users/:lession_id')
+    findOneUser(@Param('lession_id') lession_id: string, @Request() req) : Observable<Lession>{
+        // this.lession_saveService.create_lession(Number(lession_id)).subscribe();
+        if(req.user){
+            this.lession_saveService.create_lession(Number(lession_id),req.user.user).subscribe();
+        }
+        this.lessionService.updateView(Number(lession_id)).subscribe();
+        return this.lessionService.findOne(Number(lession_id));
+    }
+
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()

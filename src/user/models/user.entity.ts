@@ -32,6 +32,9 @@ export class UserEntity {
     @OneToMany(() => LessionEntity, (lession: LessionEntity) => lession.author)
     public lessions: LessionEntity[];
 
+    // @OneToMany(() => Lession_saveEntity, (lession_save: Lession_saveEntity) => lession_save.author)
+    // public lession_save: Lession_saveEntity[];
+ 
     @BeforeInsert()
     emailToLowerCase(){
         this.email = this.email.toLowerCase()

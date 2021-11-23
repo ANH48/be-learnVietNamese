@@ -49,6 +49,8 @@ export class LessionEntity {
     @ManyToOne(() => UserEntity, (user: UserEntity) => user.lessions)
     public author: UserEntity;
 
+    // @ManyToOne(() => Lession_saveEntity, (lession_save: Lession_saveEntity) => lession_save.lession)
+    // public lession_save: UserEntity;
 
     
 

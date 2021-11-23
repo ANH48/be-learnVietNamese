@@ -74,13 +74,16 @@ export class LessionService {
             // .andWhere("author.id = :userId", {userId: author.id})
             .leftJoinAndSelect("lession.courseType","courseType")
             .select(["lession","author.username", "author.name","courseType"])
-            .getMany())
+            .getMany()
+            // .execute()
+            )
+            // .execute())
             .pipe(
                 map((lession: any) => {
                     if(!lession || lession === []) throw new BadRequestException("Lession does not exist ");
                     lession.map((item: any) => {
-                        if(!item.lession_lession_id) throw new BadRequestException("Lession does not exist ");
-                        item.lession_views = item.lession_views  + 1;
+                        if(!item.lession_id) throw new BadRequestException("Lession does not exist ");
+                        item.views = item.views  + 1;
                         // const {...result} = item;
                         // return item;
                     })
