@@ -12,7 +12,7 @@ import { MailService } from 'src/mail/mail.service';
 import { UserEntity } from '../models/user.entity';
 import { User, UserRole } from '../models/user.interface';
 // import { AdminRole } from '../../admin/models/admin.interface';
-import {  confirmTokenEmailDTO, ForgotPasswordDTO, LoginDTO, RegisterUserDTO, UpdateUserDTO } from '../models/user.model';
+import {  confirmTokenEmailDTO, ForgotPasswordDTO, LoginDTO, RegisterUserDTO, UpdateUserDTO, CreateUserDTO } from '../models/user.model';
 import { UserService } from '../service/user.service';
 
 
@@ -40,6 +40,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     @hasRoles(UserRole.ADMIN)
+    @ApiBody({ type: CreateUserDTO})
     @Post('create')
     create(@Body()user: User): Observable<User | Object> {
         const obj: any = {
@@ -50,7 +51,7 @@ export class UserController {
         if(!isEmail) return  obj;
         return this.userService.create(user).pipe(
             map((user: User) => user),
-            catchError(err => of({error: err.message})) 
+            catchError(err => { throw new BadRequestException("Email or User is exist")})
         );
     }
 
@@ -82,7 +83,7 @@ export class UserController {
     //     return this.userService.findAll();
     // }
     // paginate 
-    index( @Query('page') page: number = 1 ,@Query('limit') limit: number = 10 ) : Observable<Pagination<User>>{
+    index( @Query('page') page: number = 1  ,@Query('limit') limit: number = 100 ) : Observable<Pagination<User>>{
         limit = limit > 100 ? 100 : limit;
 
         return this.userService.paginate({page: Number(page), limit: Number(limit), route: 'https://localhost:3000/api/users'});
