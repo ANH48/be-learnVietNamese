@@ -26,13 +26,16 @@ export class UserService {
                 newUser.username = user.username;
                 newUser.email = user.email;
                 newUser.password = passwordHash;
+                // console.log(passwordHash)
+                newUser.blocked_user = 0;
+                newUser.count_error = 0;
                 newUser.role = user.role;
                 return from(this.userRepository.save(newUser)).pipe(
                     map((user: User) => {
                         const {password, ...result} = user;
                         return result;
                     }),
-                    catchError(err => throwError(()=> new Error(err)) )
+                    catchError(err => {throw new BadRequestException("User or email existed")} )
                 )
             })
         )
@@ -122,8 +125,13 @@ export class UserService {
 
     updateOne(id: number, user: User): Observable<any>{
         delete user.email;
-        delete user.password;
-        
+        // delete user.password;
+        if(user.password)
+        return this.authService.hashPassword(user.password).pipe(
+            switchMap((passwordHash: string) => {
+                user.password = passwordHash
+                return from(this.userRepository.update(id, user));
+            }));
         return from(this.userRepository.update(id, user));
     }
 

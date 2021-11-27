@@ -91,12 +91,13 @@ export class UserController {
 
 
 
-    // @hasRoles(UserRole.USER,UserRole.MEMBER)
-    //
-    // @Delete(':id')
-    // deleteOne(@Param('id') id: string) : Observable<any>{
-    //     return this.userService.deleteOne(Number(id));
-    // }
+    @hasRoles(UserRole.USER,UserRole.MEMBER)
+    @ApiBearerAuth()
+    @hasRoles(UserRole.ADMIN)
+    @Delete('delete/:id')
+    deleteOne(@Param('id') id: string) : Observable<any>{
+        return this.userService.deleteOne(Number(id));
+    }
    
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
