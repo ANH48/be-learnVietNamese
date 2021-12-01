@@ -57,8 +57,8 @@ export class BlogService {
         // }
 
         findAll(options: IPaginationOptions) : Observable<Blog[]>{
-            let skip = Number(options.page);
-            let limit = Number(options.limit);
+            // let skip = Number(options.page);
+            // let limit = Number(options.limit);
 
             return from(this.blogRepository.createQueryBuilder("blogs")
             .leftJoinAndSelect("blogs.author", "author")
@@ -66,8 +66,8 @@ export class BlogService {
             // .andWhere("author.id = :userId", {userId: author.id})
             .leftJoinAndSelect("blogs.blogType","blogType")
             .select(["blogs","author.username", "author.name","blogType"])
-            .skip(skip)
-            .take(limit)
+            // .skip(skip)
+            // .take(limit)
             // .execute());
             .getMany());
         }
