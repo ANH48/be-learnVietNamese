@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseGuards, UseInterceptors, Request, Res, Query, BadRequestException } from '@nestjs/common';
 import { registerAs } from '@nestjs/config';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiProperty, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap, throwError } from 'rxjs';
@@ -46,7 +46,7 @@ export class BlogController {
         
             return this.blogService.create(blog,req.user).pipe(
                 map((blog: Blog) => blog),
-                catchError(err => of({error: err.message})) 
+                catchError(err => { throw new BadRequestException(err)})
             );
 
     }
@@ -135,6 +135,6 @@ export class BlogController {
 
     @Get('blogs-image/:imagename')
     findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
-        return of(res.sendFile(join(process.cwd(), 'upload/blogs/' + imagename)));
+        return of(res.sendFile(join(process.cwd(), 'uploads/blogs/' + imagename)));
     }
 } 

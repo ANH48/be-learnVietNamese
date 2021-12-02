@@ -39,7 +39,7 @@ export class BlogService {
                     const {...result} = blog;
                     return result;
                 }),
-                catchError(err => throwError(()=> new Error(err)) )
+                catchError(err => { throw new BadRequestException(err)})
             )
 
         }
