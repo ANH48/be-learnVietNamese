@@ -96,13 +96,18 @@ export class BlogController {
     @ApiBody({ type: blogDTO})
     @Put('update/:blog_id')
     updateOne(@Param('blog_id')blog_id: string, @Body()blog: Blog, @Request() req): Observable<Blog>{
-        if(req.user.user.role!=ListRole.ADMIN){
-            // blog.author = req.user.user.id;
-            return this.blogService.updateOneCheckId(Number(blog_id),Number(req.user.user.id) ,blog);
-        }else{
-            return this.blogService.updateOne(Number(blog_id), blog, req.user.user);
-
+        try {
+            if(req.user.user.role!=ListRole.ADMIN){
+                // blog.author = req.user.user.id;
+                return this.blogService.updateOneCheckId(Number(blog_id),Number(req.user.user.id) ,blog);
+            }else{
+                return this.blogService.updateOne(Number(blog_id), blog, req.user.user);
+    
+            }
+        } catch (error) {
+            catchError(error => { throw new BadRequestException(error)})
         }
+      
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

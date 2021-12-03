@@ -131,8 +131,8 @@ export class BlogService {
                 map((blog: any) => {
                     if(!blog || blog === []) throw new BadRequestException("Blog does not exist ");
                     blog.map((item: any) => {
-                        if(!item.blogs_blog_id) throw new BadRequestException("Blog does not exist ");
-                        item.blogs_views = item.blogs_views  + 1;
+                        if(!item.blog_id) throw new BadRequestException("Blog does not exist ");
+                        item.views = item.views  + 1;
                         // const {...result} = item;
                         // return item;
                     })
@@ -158,7 +158,7 @@ export class BlogService {
                 map((blog: Blog) => {
                     if(!blog) return;
                     else{
-                        const {...result} = blog;
+                        // const {...result} = blog;
                         blog.views = blog.views + 1;
                         return from(this.blogRepository.update(blog_id, blog));
                     }
@@ -190,7 +190,10 @@ export class BlogService {
 
         updateOne(blog_id: number, blog: Blog, user: UserEntity): Observable<any>{
             blog.author = user;
-            return from(this.blogRepository.update(blog_id, blog));
+                return from(this.blogRepository.update(blog_id, blog)).pipe(
+                    catchError(error => { throw new BadRequestException(error)}
+                ));
+            
         }
         updateOneCheckId(blog_id: number, idUser: number, blog: Blog): Observable<any>{
             return from(this.blogRepository.findOne({blog_id},{relations: ["author"]})).pipe(
@@ -205,8 +208,8 @@ export class BlogService {
                         }
                         return obj;
                     }
-
-                })
+                }),
+                catchError(err => { throw new BadRequestException(err)})
                 )
             
         }
