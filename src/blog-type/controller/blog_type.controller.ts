@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
@@ -25,7 +25,7 @@ export class BlogTypeController {
     create(@Body()blogType: BlogType, @Request() req): Observable<BlogType | Object> {
         return this.blogTypeService.create(blogType).pipe(
             map((BlogType: BlogType) => BlogType),
-            catchError(err => of({error: err.message})) 
+            catchError(err => {throw new BadRequestException(err)}) 
         );
     }
 
