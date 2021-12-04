@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
@@ -28,7 +28,7 @@ export class CourseController {
     create(@Body()course: Course): Observable<Course | Object> {
         return this.courseService.create(course).pipe(
             map((course: Course) => course),
-            catchError(err => of({error: err.message})) 
+            catchError(err => {throw new BadRequestException(err)}) 
         );
     }
 
