@@ -13,6 +13,7 @@ import { LessionModule } from './lession/lession.module';
 import { MailModule } from './mail/mail.module';
 import { SurcriseModule } from './surcrise/surcrise.module';
 import { Lession_saveModule } from './lession-save/lession-save.module';
+import { ImageModule } from './Image/image.module';
 
 
 
@@ -42,7 +43,8 @@ import { Lession_saveModule } from './lession-save/lession-save.module';
     LessionModule,
     MailModule,
     SurcriseModule,
-    Lession_saveModule
+    Lession_saveModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],

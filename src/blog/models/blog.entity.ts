@@ -14,10 +14,10 @@ export class BlogEntity {
     @Column( {unique: true} )
     blog_title: string;
 
-    @Column( {unique: true} )
+    @Column( { length: 5500 } )
     blog_description: string;
 
-    @Column()
+    @Column({ length: 5500 })
     blog_content: string;
 
     @Column()

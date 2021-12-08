@@ -1,5 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
+import { join } from 'path';
 import { catchError, from, map, Observable, of, tap } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
@@ -8,12 +11,30 @@ import { ListRole } from 'src/auth/role/role.enum';
 import { Course, CourseType } from '../models/course.interface';
 import { CourseDTO } from '../models/course.model';
 import { CourseService } from '../service/course.service';
+import { v4 as uuidv4 } from 'uuid';
+import path = require('path');
+import { ImageService } from 'src/Image/image.service';
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads/course',
+        filename: (req, file, cb) => {
+            const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+
+            cb(null, `${filename}${extension}`)
+        }
+    })
+
+}
 
 @ApiTags('course')
 @Controller('course')
 export class CourseController {
 
-    constructor(private courseService: CourseService){ }
+    constructor(
+        private courseService: CourseService,
+        private imageService : ImageService
+        ){ }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
@@ -60,6 +81,25 @@ export class CourseController {
         return this.courseService.deleteOne(Number(course_id));
     }
     
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @ApiBearerAuth()
+    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file', storage))
+    uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
+        const str = "http://localhost:4000/api/course/course-image/" + file.filename;
+        const obj = {
+            image_name: file.filename,
+            image_link: str
+        }
+        this.imageService.create(obj).subscribe();
+        return of({imagePath: file.filename, imageLink: str});
+    }
+
+    @Get('course-image/:imagename')
+    findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
+        return of(res.sendFile(join(process.cwd(), 'uploads/course/' + imagename)));
+    }
 
 
 } 

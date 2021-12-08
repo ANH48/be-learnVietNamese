@@ -15,6 +15,7 @@ import path = require('path');
 import { join } from 'path';
 import { ListRole } from 'src/auth/role/role.enum';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import { ImageService } from 'src/Image/image.service';
 
 export const storage = {
     storage: diskStorage({
@@ -33,7 +34,10 @@ export const storage = {
 @Controller('blogs')
 export class BlogController {
 
-    constructor(private blogService: BlogService){ }
+    constructor(
+        private blogService: BlogService,
+        private imageService: ImageService
+        ){ }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
@@ -135,6 +139,12 @@ export class BlogController {
         //     tap((blog: Blog) => console.log(blog)),
         //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
         // )
+        const str = "http://localhost:4000/api/blogs/blogs-image/" + file.filename;
+        const obj = {
+            image_name: file.filename,
+            image_link: str
+        }
+        this.imageService.create(obj).subscribe();
         return of({imagePath: file.filename});
     }
 

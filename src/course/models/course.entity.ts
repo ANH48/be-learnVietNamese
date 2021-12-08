@@ -21,6 +21,9 @@ export class CourseEntity {
     // {unique: true}
     @Column()
     course_keywords: string;
+    
+    @Column()
+    course_image: string;
 
     // @Column( {type: true} )
     // course_keywords: string;
