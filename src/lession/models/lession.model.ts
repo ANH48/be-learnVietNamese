@@ -6,8 +6,8 @@ export class LessionDTO {
     @ApiProperty({type: String, description: 'lession_name'})
     lession_name: string;
 
-    @ApiProperty({type: String, description: 'lession_keywords'})
-    lession_keywords:string;
+    @ApiProperty({type: String, description: 'lession_keyword'})
+    lession_keyword:string;
 
     @ApiProperty({type: String, description: 'lession_img'})
     lession_img: string;

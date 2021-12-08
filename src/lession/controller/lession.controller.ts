@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageService } from 'src/Image/image.service';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/lession',
@@ -36,6 +37,8 @@ export class LessionController {
     constructor(
         private lessionService: LessionService,
         private lession_saveService: Lession_saveService,
+        private imageService: ImageService
+
         
         ){ }
 
@@ -111,19 +114,18 @@ export class LessionController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-        // const blog: Blog = req.blog;
-
-        // blog.blog_avatar = file.filename;
-        // return this.blogService.updateOne(blog.blog_id, blog).pipe(
-        //     tap((blog: Blog) => console.log(blog)),
-        //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
-        // )
+        const str = "http://localhost:4000/api/lession/lession-image/" + file.filename;
+        const obj = {
+            image_name: file.filename,
+            image_link: str
+        }
+        this.imageService.create(obj).subscribe();
         return of({imagePath: file.filename});
     }
 
-    @Get('blogs-image/:imagename')
+    @Get('lession-image/:imagename')
     findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
-        return of(res.sendFile(join(process.cwd(), 'upload/lession/' + imagename)));
+        return of(res.sendFile(join(process.cwd(), 'uploads/lession/' + imagename)));
     }
     
 

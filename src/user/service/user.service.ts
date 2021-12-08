@@ -223,11 +223,12 @@ export class UserService {
                             if(match) {
                                 const {password, ...result} = user;
                                 user.count_error = 0;
+                                delete user.password;
                                 this.updateOne(user.id,user).subscribe();
                                 return result;
                             }else{
                                 if(user.count_error==5) {
-                                    user.count_error = 5;
+                                    user.count_error = 0;
                                     day.setMinutes(day.getMinutes() + 5);
                                     user.time_blocked = day;
                                     this.updateTime_blocked(user.id,user).subscribe();
@@ -236,6 +237,7 @@ export class UserService {
                                 else{
                                     user.count_error = user.count_error + 1;
                                 }
+                                delete user.password;
                                 this.updateOne(user.id,user).subscribe();
                              throw  new BadRequestException("Email or password wrong");
                             }
@@ -267,19 +269,22 @@ export class UserService {
                             if(match) {
                                 const {password, ...result} = user;
                                 user.count_error = 0;
+                                delete user.password;
                                 this.updateOne(user.id,user).subscribe();
                                 return result;
                             }else{
                                 if(user.count_error==5) {
-                                    user.count_error = 5;
+                                    user.count_error = 0;
                                     day.setMinutes(day.getMinutes() + 5);
                                     user.time_blocked = day;
+                                    delete user.password;
                                     this.updateTime_blocked(user.id,user).subscribe();
                                     throw new BadRequestException("User is blocked in 5 minutes");
                                 }
                                 else{
                                     user.count_error = user.count_error + 1;
                                 }
+                                delete user.password;
                                 this.updateOne(user.id,user).subscribe();
                              throw new BadRequestException("Username or password wrong");;
                             }

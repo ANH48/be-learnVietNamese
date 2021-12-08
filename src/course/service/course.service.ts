@@ -21,8 +21,11 @@ export class CourseService {
 
         create(course: Course): Observable<Course> {
             const newBlog = new CourseEntity();
+
             newBlog.course_name = course.course_name;
             newBlog.course_keywords = course.course_keywords;
+            newBlog.course_image = course.course_image ? course.course_image : "";
+
             return from(this.courseEntity.save(newBlog)).pipe(
                 map((course: Course) => {
                     const { ...result} = course;

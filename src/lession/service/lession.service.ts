@@ -24,7 +24,7 @@ export class LessionService {
             newLession.lession_name = lession.lession_name;
             newLession.lession_video = lession.lession_video;
             newLession.lession_img = lession.lession_img;
-            newLession.lession_keyword = lession.lession_keywords;
+            newLession.lession_keyword = lession.lession_keyword;
             newLession.author = user;
             return from(this.LessionRepository.save(newLession)).pipe(
                 map((lessionType: Lession) => {
