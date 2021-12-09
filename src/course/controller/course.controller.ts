@@ -14,6 +14,8 @@ import { CourseService } from '../service/course.service';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { ImageService } from 'src/Image/image.service';
+import { Query } from '@nestjs-query/core';
+// import { Query } from '@nestjs-query/core';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/course',
@@ -24,8 +26,13 @@ export const storage = {
             cb(null, `${filename}${extension}`)
         }
     })
-
 }
+
+// const q: Query<MyClass> = {
+//     filter: {
+//       title: { eq: 'Foo Bar' },
+//     },
+//   };
 
 @ApiTags('course')
 @Controller('course')
