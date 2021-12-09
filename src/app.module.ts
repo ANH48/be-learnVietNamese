@@ -44,7 +44,8 @@ import { ImageModule } from './Image/image.module';
     MailModule,
     SurcriseModule,
     Lession_saveModule,
-    ImageModule
+    ImageModule,
+    SurcriseModule
   ],
   controllers: [AppController],
   providers: [AppService],
