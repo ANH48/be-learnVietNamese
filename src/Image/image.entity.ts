@@ -17,7 +17,7 @@ export class ImageEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     image_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp'})
     image_update: Date;
 
 

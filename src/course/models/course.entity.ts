@@ -35,7 +35,7 @@ export class CourseEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     course_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp'})
     course_update: Date;
 
     @OneToMany(() => LessionEntity, lesion => lesion.courseType)

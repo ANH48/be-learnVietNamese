@@ -16,7 +16,7 @@ export class BlogTypeEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp'})
     blog_update: Date;
 
 
