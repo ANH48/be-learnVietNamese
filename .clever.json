@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "app_id": "app_f4888b31-4a5b-49f4-90a2-2ca794c87146",
+      "org_id": "user_91d53274-07a8-404e-a0f4-f39dd1deaa78",
+      "deploy_url": "https://push-n2-par-clevercloud-customers.services.clever-cloud.com/app_f4888b31-4a5b-49f4-90a2-2ca794c87146.git",
+      "name": "learnvietnamese",
+      "alias": "learnvietnamese"
+    }
+  ]
+}

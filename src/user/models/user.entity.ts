@@ -49,7 +49,8 @@ export class UserEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    
+    @Column({type: 'timestamp'})
     update: Date;
 
     @Column({default: 0} )
@@ -60,8 +61,6 @@ export class UserEntity {
 
     @Column({nullable: true})
     time_blocked: Date;
-    // @OneToMany(() => Lession_saveEntity, lession_save => lession_save.lession_save_id)
-    // lession_save: Lession_saveEntity;
 
     @BeforeUpdate()
     updateTimestamp(){
