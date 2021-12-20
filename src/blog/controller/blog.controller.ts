@@ -139,7 +139,7 @@ export class BlogController {
         //     tap((blog: Blog) => console.log(blog)),
         //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
         // )
-        const str = "http://localhost:4000/api/blogs/blogs-image/" + file.filename;
+        const str = "https://learnvietnamese.herokuapp.com/blogs/blogs-image/" + file.filename;
         const obj = {
             image_name: file.filename,
             image_link: str
