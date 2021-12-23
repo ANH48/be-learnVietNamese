@@ -18,7 +18,7 @@ export class SurcriseEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     surcrise_create: Date;
 
-    @Column({type: 'timestamp'})
+    @Column({type: 'timestamp',nullable: true})
     surcrise_update: Date;
 
     @BeforeUpdate()

@@ -50,7 +50,7 @@ export class UserEntity {
     create: Date;
 
     
-    @Column({type: 'timestamp'})
+    @Column({type: 'timestamp', nullable: true})
     update: Date;
 
     @Column({default: 0} )
