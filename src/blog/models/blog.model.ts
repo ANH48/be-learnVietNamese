@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { type } from "os";
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
 
 export class blogDTO {

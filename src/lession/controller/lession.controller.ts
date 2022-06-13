@@ -44,7 +44,7 @@ export class LessionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
@@ -83,10 +83,10 @@ export class LessionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)
     @Put('update/:lession_id')
     updateOne(@Param('lession_id')lession_id: string, @Body()lession: Lession, @Request() req): Observable<Lession>{
-        if(req.user.user.role!=ListRole.ADMIN){
+        if(req.user.user.role!=ListRole.ADMIN || req.user.user.role!=ListRole.TEACHER){
             // blog.author = req.user.user.id;
             return this.lessionService.updateOneCheckId(Number(lession_id),Number(req.user.user.id) ,lession);
         }else{
@@ -97,11 +97,11 @@ export class LessionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)
     @Delete('delete/:lession_id')
     deleteOne(@Param('lession_id') lession_id: string,  @Request() req): Observable<any>{
         // return this.lessionService.deleteOne(Number(lession_id));
-        if(req.user.user.role!=ListRole.ADMIN){
+        if(req.user.user.role!=ListRole.ADMIN || req.user.user.role!=ListRole.TEACHER){
             return this.lessionService.deleteOneCheckId(Number(lession_id),Number(req.user.user.id))
         }else{
             return this.lessionService.deleteOne(Number(lession_id))
@@ -110,7 +110,7 @@ export class LessionController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN,ListRole.TEACHER)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
@@ -128,6 +128,4 @@ export class LessionController {
         return of(res.sendFile(join(process.cwd(), 'uploads/lession/' + imagename)));
     }
     
-
-
 } 

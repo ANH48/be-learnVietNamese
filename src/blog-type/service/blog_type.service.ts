@@ -17,43 +17,43 @@ export class BlogTypeService {
         // @InjectRepository(UserEntity) private readonly blogRepository: Repository<UserEntity>,
         private authService: AuthService,
         @InjectRepository(BlogTypeEntity) private readonly blogRepository: Repository<BlogTypeEntity>,
-        ) {}
+    ) { }
 
-        create(blogType: BlogType): Observable<BlogType> {
-            const newBlog = new BlogTypeEntity();
-            newBlog.blog_type_name = blogType.blog_type_name;
-            return from(this.blogRepository.save(newBlog)).pipe(
-                map((blogType: BlogType) => {
-                    const { ...result} = blogType;
-                     return result;
-                }),
-                catchError(err => throwError(()=> new Error(err)) )
-            )
-            // return from(this.userRepository.save(user));
-        }
-        findAll() : Observable<BlogType[]>{
-            return from(this.blogRepository.find({relations: ["blogs"]})).pipe(
-                map((blog: BlogType[]) => {
-                    return blog;
-                })
-            )
-        }
-
-    findOne(blog_type_id: number) : Observable<BlogType>{
-        return from(this.blogRepository.findOne({blog_type_id},{relations: ["blogs"]})).pipe(
-            map((blog: BlogType) => {
-                const {...result} = blog;
+    create(blogType: BlogType): Observable<BlogType> {
+        const newBlog = new BlogTypeEntity();
+        newBlog.blog_type_name = blogType.blog_type_name;
+        return from(this.blogRepository.save(newBlog)).pipe(
+            map((blogType: BlogType) => {
+                const { ...result } = blogType;
                 return result;
+            }),
+            catchError(err => throwError(() => new Error(err)))
+        )
+        // return from(this.userRepository.save(user));
+    }
+    findAll(): Observable<BlogType[]> {
+        return from(this.blogRepository.find({ relations: ["blogs"] })).pipe(
+            map((blog: BlogType[]) => {
+                return blog;
             })
-            )
+        )
     }
 
-    deleteOne(id: number) : Observable<any>{
+    findOne(blog_type_id: number): Observable<BlogType> {
+        return from(this.blogRepository.findOne({ blog_type_id }, { relations: ["blogs"] })).pipe(
+            map((blog: BlogType) => {
+                const { ...result } = blog;
+                return result;
+            })
+        )
+    }
+
+    deleteOne(id: number): Observable<any> {
         return from(this.blogRepository.delete(id));
     }
 
-    updateOne(blog_type_id: number, blogType: BlogType): Observable<any>{
+    updateOne(blog_type_id: number, blogType: BlogType): Observable<any> {
         return from(this.blogRepository.update(blog_type_id, blogType));
     }
 
- }
+}

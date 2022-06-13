@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -9,12 +9,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { ListRole } from 'src/auth/role/role.enum';
 import { Course, CourseType } from '../models/course.interface';
-import { CourseDTO } from '../models/course.model';
+import { CourseDTO, ParamDTO } from '../models/course.model';
 import { CourseService } from '../service/course.service';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { ImageService } from 'src/Image/image.service';
-import { Query } from '@nestjs-query/core';
 // import { Query } from '@nestjs-query/core';
 export const storage = {
     storage: diskStorage({
@@ -45,7 +44,7 @@ export class CourseController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)
     @Post('create')
     @ApiCreatedResponse({description: "Create date with post"})
     @ApiForbiddenResponse({description: 'Forbidden'})
@@ -53,16 +52,22 @@ export class CourseController {
         {name: 'Course Type', enum: CourseType},
     )
     @ApiBody({type: CourseDTO})
-    create(@Body()course: Course): Observable<Course | Object> {
-        return this.courseService.create(course).pipe(
+    create(@Body()course: Course, @Request() req): Observable<Course | Object> {
+        return this.courseService.create(course, req.user).pipe(
             map((course: Course) => course),
             catchError(err => {throw new BadRequestException(err)}) 
         );
     }
 
-    @Get()
+    @Get("all")
     findAll() : Observable<Course[]>{
         return this.courseService.findAll();
+    }
+
+    @Get()
+    findCourseByRole(@Query() param: ParamDTO, @Request() req) : Observable<Course[]>{
+        // console.log(req, "this is req", param);
+        return this.courseService.findByRole(param);
     }
 
   
@@ -73,24 +78,24 @@ export class CourseController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)
     @Put('update/:course_id')
     @ApiBody({type: CourseDTO})
-    updateOne(@Param('course_id')course_id: string, @Body()course: Course): Observable<Course>{
+    updateOne(@Param('course_id')course_id: string, @Body()course: Course, @Request() req): Observable<Course>{
         return this.courseService.updateOne(Number(course_id), course);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN)   
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER)   
     @Delete('delete/:course_id')
-    deleteOne(@Param('course_id') course_id: string): Observable<any>{
+    deleteOne(@Param('course_id') course_id: string, @Request() req): Observable<any>{
         return this.courseService.deleteOne(Number(course_id));
     }
     
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN,ListRole.WRITTER)
+    @hasRoles(ListRole.ADMIN,ListRole.TEACHER)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {

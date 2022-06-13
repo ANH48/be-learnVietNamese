@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { type } from "os";
 import { UserRole } from "./user.interface";
 
 export class LoginDTO {

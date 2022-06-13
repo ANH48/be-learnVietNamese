@@ -44,7 +44,6 @@ export class BlogService {
 
         }
 
-
         // findAll(filter: object) : Observable<Blog[]>{
         //     // console.log(filter)
         //     return from(this.blogRepository.createQueryBuilder("blogs")
@@ -215,5 +214,3 @@ export class BlogService {
         }
 
  }
-
-

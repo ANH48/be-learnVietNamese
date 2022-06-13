@@ -30,18 +30,18 @@ import { catchError, from, map, Observable, of, tap, throwError } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
-import { SurcriseDTO } from '../models/surcrise.model';
-import { SurcriseService } from '../service/surcrise.service';
-import { Surcrise } from '../models/surcrise.interface';
+import { SubscribeDTO } from '../models/subscribe.model';
+import { SubscribeService } from '../service/subscribe.service';
+import { Subscribe } from '../models/subscribe.interface';
 import { create } from 'domain';
 import { ListRole } from 'src/auth/role/role.enum';
 import { MailService } from 'src/mail/mail.service';
 
-@ApiTags('surcrise')
-@Controller('surcrise')
-export class SurcriseController {
+@ApiTags('subscribe')
+@Controller('subscribe')
+export class SubscribeController {
   constructor(
-    private surcriseService: SurcriseService,
+    private subscribeService: SubscribeService,
     private mailService: MailService
   ) // private imageService: ImageService
   {}
@@ -63,20 +63,20 @@ export class SurcriseController {
 
   // }
   @Post('create')
-  @ApiBody({ type: SurcriseDTO })
-  async create(@Body() surcrise: Surcrise): Promise<Surcrise | Object> {
+  @ApiBody({ type: SubscribeDTO })
+  async create(@Body() surcrise: Subscribe): Promise<Subscribe | Object> {
     if (surcrise) {
-      const validateEmail = await this.surcriseService.validateEmail(
+      const validateEmail = await this.subscribeService.validateEmail(
         surcrise?.email,
       );
       if (validateEmail === 0) {
-        const result = await this.surcriseService.create(surcrise);
+        const result = await this.subscribeService.create(surcrise);
         await this.mailService.sendSurcrise(result);
+        console.log('result', result)
         if (result) {
-
           return result;
         } else {
-          throw new BadRequestException('Surcrise is wrong ');
+          throw new BadRequestException('Subscribe is wrong ');
         }
       } else {
         switch (validateEmail) {
@@ -92,8 +92,8 @@ export class SurcriseController {
   }
 
   @Get()
-  async findAll() : Promise<Surcrise[]>{
-      const result = this.surcriseService.findAll();
+  async findAll() : Promise<Subscribe[]>{
+      const result = this.subscribeService.findAll();
       return result;
   } 
 

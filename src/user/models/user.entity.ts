@@ -1,9 +1,12 @@
 import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
+import { CourseEntity } from "src/course/models/course.entity";
 import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
 import { LessionEntity } from "src/lession/models/lession.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { RegisterCourseEntity } from "src/register-course/models/register-course.entity";
+import { SubscribeEntity } from "src/subscribe/models/subscribe.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 
 @Entity({name: "users"})
@@ -29,12 +32,15 @@ export class UserEntity {
     @OneToMany(() => BlogEntity, (blog: BlogEntity) => blog.author)
     public blogs: BlogEntity[];
 
+    @OneToMany(() => CourseEntity, (course: CourseEntity) => course.author)
+    public course: CourseEntity[];
+
     @OneToMany(() => LessionEntity, (lession: LessionEntity) => lession.author)
     public lessions: LessionEntity[];
 
-    // @OneToMany(() => Lession_saveEntity, (lession_save: Lession_saveEntity) => lession_save.author)
-    // public lession_save: Lession_saveEntity[];
- 
+    @OneToMany(() => RegisterCourseEntity, (registerCourse: RegisterCourseEntity) => registerCourse.user)
+    public course_enroll: RegisterCourseEntity[];   
+
     @BeforeInsert()
     emailToLowerCase(){
         this.email = this.email.toLowerCase()
@@ -67,7 +73,5 @@ export class UserEntity {
     updateTimestamp(){
         this.update = new Date; 
     }
-
-
 
 }

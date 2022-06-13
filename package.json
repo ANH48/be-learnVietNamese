@@ -36,6 +36,7 @@
     "handlebars": "^4.7.7",
     "ioredis": "^4.28.0",
     "mysql": "^2.18.1",
+    "nested-groupby": "^3.0.0",
     "nestjs-typeorm-paginate": "^3.1.3",
     "nodemailer": "^6.7.0",
     "passport": "^0.5.0",

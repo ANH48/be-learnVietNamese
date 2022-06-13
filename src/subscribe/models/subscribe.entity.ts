@@ -1,10 +1,11 @@
+import { UserEntity } from "src/user/models/user.entity";
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne } from "typeorm";
 // import { Lession } from "./lession.interface";
 
-@Entity({name: "surcrise"})
-export class SurcriseEntity {
+@Entity({name: "subscribe"})
+export class SubscribeEntity {
     @PrimaryGeneratedColumn()
-    surcrise_id: number; 
+    subscribe_id: number; 
 
     @Column(  )
     name: string;
@@ -16,14 +17,14 @@ export class SurcriseEntity {
     phone: string;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
-    surcrise_create: Date;
+    subscribe_create: Date;
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
-    surcrise_update: Date;
+    subscribe_update: Date;
 
     @BeforeUpdate()
     updateTimestamp(){
-        this.surcrise_update = new Date; 
+        this.subscribe_update = new Date; 
     }
 
 

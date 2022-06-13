@@ -43,7 +43,7 @@ export class LessionEntity {
     // @Column({type: 'enum', enum: CourseType, default: CourseType.BEGINNER})
     // role: CourseType;
 
-    @ManyToOne(() => CourseEntity, courseType => courseType.lesion)
+    @ManyToOne(() => CourseEntity, courseType => courseType.lession)
     public courseType: CourseEntity;
 
     @ManyToOne(() => UserEntity, (user: UserEntity) => user.lessions)

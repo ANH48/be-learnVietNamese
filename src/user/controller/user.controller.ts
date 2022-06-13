@@ -58,7 +58,7 @@ export class UserController {
  
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER, UserRole.TEACHER)
     @Get('/:id')
     findOne(@Param('id') id: string, @Request() req): Observable<User> {
         if(req.user.user.role === UserRole.ADMIN){

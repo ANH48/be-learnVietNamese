@@ -13,9 +13,3 @@ export interface Lession {
     lession_create?: Date;
     lession_update?: Date;
 }
-
-// export enum CourseType {
-//     BEGINNER = 'beginner',
-//     INTERMEDIATE = 'intermediate',
-//     ADVANCED= 'advanced',
-// }

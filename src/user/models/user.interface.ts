@@ -1,4 +1,3 @@
-
 export interface User {
     id?: number;
     name?: string;
@@ -19,5 +18,7 @@ export enum UserRole {
     MEMBER= 'member',
     USER = 'user',
     ADMIN='admin',
-    WRITTER="writter"
+    WRITTER="writer",
+    TEACHER="teacher",
+    STUDENT="student"
 }

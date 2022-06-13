@@ -35,11 +35,6 @@ export class BlogEntity {
     @ManyToOne(() => BlogTypeEntity, blogType => blogType.blogs)
     public blogType: BlogTypeEntity;
 
-    // @BeforeInsert()
-    // emailToLowerCase(){
-    //     this.email = this.email.toLowerCase()
-    // }
-
     @ManyToOne(() => UserEntity, (user: UserEntity) => user.blogs)
     public author: UserEntity;
    
@@ -47,7 +42,7 @@ export class BlogEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     blog_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp', nullable: true})
     blog_update: Date;
 
     @Column({default: 0})

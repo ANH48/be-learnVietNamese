@@ -1,6 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { Surcrise } from 'src/surcrise/models/surcrise.interface';
+import { Subscribe } from 'src/subscribe/models/subscribe.interface';
 import { User } from 'src/user/models/user.interface';
 
 @Injectable()
@@ -22,31 +22,43 @@ export class MailService {
     });
   }
 
+  async sendUserConfirmInformationV2(user: User, token: string, title: string, template: string) {
+    const url = process.env.LOCALHOST+`users/confirmTokenEmail`;
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: title,
+      template: template, 
+      context: { 
+        name: user.name,
+        url,
+        token
+      },
+    });
+  }
+
   async sendResetPassword(user: User, password: string) {
     // const url = process.env.TZ+`confirm?token=${token}`;
     await this.mailerService.sendMail({
       to: user.email,
-      // from: '"Support Team" <support@example.com>', // override default from
       subject: 'Welcome to Nice App! Confirm your Email',
-      template: './resetpassword', // `.hbs` extension is appended automatically
-      context: { // ✏️ filling curly brackets with content
+      template: './resetpassword', 
+      context: { 
         name: user.name,
         password: password,
       },
     });
   }
 
-  async sendSurcrise(result: Surcrise) {
+  async sendSurcrise(result: Subscribe) {
     // const url = process.env.TZ+`confirm?token=${token}`;
     await this.mailerService.sendMail({
       to: result.email,
-      // from: '"Support Team" <support@example.com>', // override default from
       subject: 'Welcome to Learn Vienamese',
-      template: './surcriseEmail', // `.hbs` extension is appended automatically
-      context: { // ✏️ filling curly brackets with content
+      template: './surcriseEmail', 
+      context: { 
         name: result.name,
         phone: result.phone,
-        date: result.surcrise_update
+        date: result.subscribe_update
       },
     });
   }

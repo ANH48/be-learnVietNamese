@@ -1,16 +1,21 @@
+import { CourseTypeEntity } from "src/course-type/models/course-type.entity";
+import { UserEntity } from "src/user/models/user.entity";
 
 export interface Course {
     course_id?: number; 
     course_name?: string;
     course_keywords?:string;
     course_image?:string;
-    CourseType?:CourseType;
+    course_description?:string;
+    // courseType?:CourseType;
+    courseType?: CourseTypeEntity;
     course_create?: Date;
     course_update?: Date;
+    author?: UserEntity;
 }
 
 export enum CourseType {
-    BEGINNER = 'beginner',
-    INTERMEDIATE = 'intermediate',
-    ADVANCED= 'advanced',
+    BEGINNER = 'Beginner',
+    INTERMEDIATE = 'Intermediate',
+    ADVANCED= 'Advanced',
 }

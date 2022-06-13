@@ -11,12 +11,11 @@ import { CourseModule } from './course/course.module';
 import { LessionModule } from './lession/lession.module';
 // import { MailModule } from './mail/mail.module';
 import { MailModule } from './mail/mail.module';
-import { SurcriseModule } from './surcrise/surcrise.module';
+import { SurcriseModule } from './subscribe/subscribe.module';
 import { Lession_saveModule } from './lession-save/lession-save.module';
 import { ImageModule } from './Image/image.module';
-
-
-
+import { CourseTypeModule } from './course-type/course-type.module';
+import { RegisterCourseModule } from './register-course/register-course.module';
 
 @Module({
   imports: [
@@ -40,12 +39,14 @@ import { ImageModule } from './Image/image.module';
     BlogModule,
     BlogTypeModule,
     CourseModule,
+    CourseTypeModule,
     LessionModule,
     MailModule,
     SurcriseModule,
     Lession_saveModule,
     ImageModule,
-    SurcriseModule
+    SurcriseModule,
+    RegisterCourseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

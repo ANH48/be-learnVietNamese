@@ -11,7 +11,6 @@ import { UserService } from './service/user.service';
     imports: [
         TypeOrmModule.forFeature([UserEntity]),
         AuthModule,
-        // MailModule
     ] ,
     providers: [UserService],
     controllers: [UserController],
