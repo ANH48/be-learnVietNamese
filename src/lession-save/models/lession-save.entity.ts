@@ -42,7 +42,7 @@ export class Lession_saveEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     lession_save_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp', nullable: true})
     lession_save_update: Date;
 
     @BeforeUpdate()
