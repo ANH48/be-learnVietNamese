@@ -21,6 +21,4 @@ export class ImageEntity {
     updateTimestamp(){
         this.image_update = new Date; 
     }
-
-
 }
