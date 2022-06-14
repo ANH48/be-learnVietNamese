@@ -114,7 +114,7 @@ export class LessionController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-        const str = "http://localhost:4000/api/lession/lession-image/" + file.filename;
+        const str = "https://learnvietnamese.herokuapp.com/lession/lession-image/" + file.filename;
         const obj = {
             image_name: file.filename,
             image_link: str

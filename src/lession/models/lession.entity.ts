@@ -57,7 +57,7 @@ export class LessionEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     lession_create: Date;
 
-    @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @Column({type: 'timestamp', nullable: true})
     lession_update: Date;
 
     @BeforeUpdate()
