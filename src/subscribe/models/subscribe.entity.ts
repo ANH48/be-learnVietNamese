@@ -19,13 +19,9 @@ export class SubscribeEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     subscribe_create: Date;
 
-<<<<<<< HEAD:src/subscribe/models/subscribe.entity.ts
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     subscribe_update: Date;
-=======
-    @Column({type: 'timestamp',nullable: true})
-    surcrise_update: Date;
->>>>>>> 7d65c82294f329dcb110c4a8e91f9d29c047d956:src/surcrise/models/surcrise.entity.ts
+
 
     @BeforeUpdate()
     updateTimestamp(){
