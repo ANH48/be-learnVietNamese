@@ -1,5 +1,5 @@
 import { UserEntity } from "src/user/models/user.entity";
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany, BeforeUpdate, ManyToOne, ManyToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { CourseEntity } from "src/course/models/course.entity";
 
 @Entity({name: "register"})

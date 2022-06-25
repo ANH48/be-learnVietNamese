@@ -4,8 +4,6 @@ import { RegisterCourseController } from './controller/register-course.controlle
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RegisterCourseEntity } from './models/register-course.entity';
 import { AuthModule } from 'src/auth/auth.module';
-import { UserService} from 'src/user/service/user.service';
-import { UserEntity } from 'src/user/models/user.entity';
 import { UserModule } from 'src/user/user.module';
 
 @Module({

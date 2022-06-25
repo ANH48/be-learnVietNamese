@@ -1,11 +1,7 @@
-import { Body, Injectable } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { type } from 'os';
-import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, from, map, Observable, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
-// import { UserEntity } from 'src/user/models/user.entity';
-import { UserEntity } from 'src/user/models/user.entity';
 import { Repository } from 'typeorm';
 import { BlogTypeEntity } from '../models/blog_type.entity';
 import { BlogType } from '../models/blog_type.interface';

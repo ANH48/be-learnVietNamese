@@ -65,13 +65,7 @@ export class BlogController {
 
         return this.blogService.findAll({page: Number(page), limit: Number(limit), route: 'https://localhost:3000/api/blogs'});
     }
-    // index( @Query('page') page: number = 1 ,@Query('limit') limit: number = 10 ) : Observable<Pagination<Blog>>{
-    //     limit = limit > 100 ? 100 : limit;
-
-        // return this.blogService.paginate({page: Number(page), limit: Number(limit), route: 'https://localhost:3000/api/blogs'});
-    // }
-
-
+    
     @Get(':id')
     // @ApiBody({ type: blogDTO})
     findOne(@Param('id') id: string) : Observable<any>{
@@ -139,13 +133,14 @@ export class BlogController {
         //     tap((blog: Blog) => console.log(blog)),
         //     map((blog: Blog) => ({blog_avatar: blog.blog_avatar}))
         // )
-        const str = "https://learnvietnamese.herokuapp.com/blogs/blogs-image/" + file.filename;
+        // const str = "https://learnvietnamese.herokuapp.com/blogs/blogs-image/" + file.filename;
+        const str = "http://localhost:4000/blogs/blogs-image/" + file.filename;
         const obj = {
             image_name: file.filename,
             image_link: str
         }
         this.imageService.create(obj).subscribe();
-        return of({imagePath: file.filename});
+        return of({imagePath: file.filename, imageLink: str});
     }
 
     @Get('blogs-image/:imagename')

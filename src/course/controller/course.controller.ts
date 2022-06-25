@@ -27,12 +27,6 @@ export const storage = {
     })
 }
 
-// const q: Query<MyClass> = {
-//     filter: {
-//       title: { eq: 'Foo Bar' },
-//     },
-//   };
-
 @ApiTags('course')
 @Controller('course')
 export class CourseController {
@@ -99,7 +93,8 @@ export class CourseController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-        const str = "https://learnvietnamese.herokuapp.com/course/course-image/" + file.filename;
+        // const str = "https://learnvietnamese.herokuapp.com/course/course-image/" + file.filename;
+        const str = "http://localhost:4000/course/course-image/" + file.filename;
         const obj = {
             image_name: file.filename,
             image_link: str
