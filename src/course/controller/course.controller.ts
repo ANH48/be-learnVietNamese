@@ -93,12 +93,8 @@ export class CourseController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-<<<<<<< HEAD
-        const str = "https://learnvietnamese.herokuapp.com/course/course-image/" + file.filename;
-=======
         // const str = "https://learnvietnamese.herokuapp.com/course/course-image/" + file.filename;
         const str = "http://localhost:4000/course/course-image/" + file.filename;
->>>>>>> tinh
         const obj = {
             image_name: file.filename,
             image_link: str
@@ -111,6 +107,4 @@ export class CourseController {
     findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
         return of(res.sendFile(join(process.cwd(), 'uploads/course/' + imagename)));
     }
-
-
 } 

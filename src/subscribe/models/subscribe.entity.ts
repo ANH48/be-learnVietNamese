@@ -22,7 +22,6 @@ export class SubscribeEntity {
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     subscribe_update: Date;
 
-
     @BeforeUpdate()
     updateTimestamp(){
         this.subscribe_update = new Date; 
