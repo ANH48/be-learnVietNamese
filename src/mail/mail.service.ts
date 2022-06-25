@@ -9,6 +9,8 @@ export class MailService {
 
   async sendUserConfirmation(user: User, token: string) {
     const url = process.env.LOCALHOST+`users/confirmTokenEmail`;
+    console.log(url, 'urlurlurl')
+    console.log(user.email, 'user email')
     await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from
@@ -20,6 +22,7 @@ export class MailService {
         token
       },
     });
+    console.log(user.email);
   }
 
   async sendUserConfirmInformationV2(user: User, token: string, title: string, template: string) {
@@ -38,6 +41,7 @@ export class MailService {
 
   async sendResetPassword(user: User, password: string) {
     // const url = process.env.TZ+`confirm?token=${token}`;
+    console.log(user.email)
     await this.mailerService.sendMail({
       to: user.email,
       subject: 'Welcome to Nice App! Confirm your Email',

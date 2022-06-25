@@ -1,11 +1,8 @@
-import { BlogTypeEntity } from "src/blog-type/models/blog_type.entity";
 import { BlogEntity } from "src/blog/models/blog.entity";
-import { Blog } from "src/blog/models/blog.interface";
+import { CommentLessonEntity } from "src/comment-lesson/models/comment-lesson.entity";
 import { CourseEntity } from "src/course/models/course.entity";
-import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
 import { LessionEntity } from "src/lession/models/lession.entity";
 import { RegisterCourseEntity } from "src/register-course/models/register-course.entity";
-import { SubscribeEntity } from "src/subscribe/models/subscribe.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 
@@ -40,6 +37,9 @@ export class UserEntity {
 
     @OneToMany(() => RegisterCourseEntity, (registerCourse: RegisterCourseEntity) => registerCourse.user)
     public course_enroll: RegisterCourseEntity[];   
+
+    @OneToMany(() => CommentLessonEntity, (commentLesson: CommentLessonEntity) => commentLesson.user)
+    public comment_user: CommentLessonEntity[];   
 
     @BeforeInsert()
     emailToLowerCase(){

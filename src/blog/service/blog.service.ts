@@ -1,13 +1,9 @@
-import { BadRequestException, ExecutionContext, Injectable } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
-import { type } from 'os';
-import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { catchError, from, map, Observable } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
-// import { UserEntity } from 'src/user/models/user.entity';
 import { UserEntity } from 'src/user/models/user.entity';
-import { User } from 'src/user/models/user.interface';
 import { Repository } from 'typeorm';
 import { BlogEntity } from '../models/blog.entity';
 import { Blog } from '../models/blog.interface';
@@ -44,85 +40,19 @@ export class BlogService {
 
         }
 
-        // findAll(filter: object) : Observable<Blog[]>{
-        //     // console.log(filter)
-        //     return from(this.blogRepository.createQueryBuilder("blogs")
-        //     .leftJoinAndSelect("blogs.author", "author")
-        //     // .where("bill.accountBill LIKE :accountBill", {accountBill})
-        //     // .andWhere("author.id = :userId", {userId: author.id})
-        //     .leftJoinAndSelect("blogs.blogType","blogType")
-        //     .select(["blogs","author.username", "author.name","blogType"])
-        //     .execute());
-        // }
-
         findAll(options: IPaginationOptions) : Observable<Blog[]>{
-            // let skip = Number(options.page);
-            // let limit = Number(options.limit);
-
             return from(this.blogRepository.createQueryBuilder("blogs")
             .leftJoinAndSelect("blogs.author", "author")
-            // .where("bill.accountBill LIKE :accountBill", {accountBill})
-            // .andWhere("author.id = :userId", {userId: author.id})
             .leftJoinAndSelect("blogs.blogType","blogType")
             .select(["blogs","author.username", "author.name","blogType"])
-            // .skip(skip)
-            // .take(limit)
-            // .execute());
             .getMany());
         }
 
 
-        // paginate(options: IPaginationOptions): Observable<Pagination<Blog>>{
-
-        //     from(this.blogRepository.createQueryBuilder("blogs")
-        //     .leftJoinAndSelect("blogs.author", "author")
-        //     // .where("bill.accountBill LIKE :accountBill", {accountBill})
-        //     // .andWhere("author.id = :userId", {userId: author.id})
-        //     .leftJoinAndSelect("blogs.blogType","blogType")
-        //     .select(["blogs","author.username", "author.name","blogType"])
-        //     .execute()).pipe();
-            
-        //     return from(paginate<Blog>(this.blogRepository, options)).pipe(
-        //         map((userPageable: Pagination<Blog>) => {
-        //             userPageable.items.forEach(function (v) {
-        //                 console.log(userPageable)
-        //                 // let temp = v.author.username;
-        //                 // delete v.author.email;
-        //                 // delete v.author.password;
-        //                 // delete v.author.tokenEmail;
-        //                 // delete v.author.expired_token;
-        //                 // delete v.author.role;
-        //                 // delete v.author.blocked_user;
-        //                 // delete v.author.count_error;
-        //                 // delete v.author.time_blocked;
-        //                 // email?:string;
-        //                 // password?:string;
-        //                 // tokenEmail?:string;
-        //                 // expired_token?: Date;
-        //                 // create: Date;
-        //                 // update: Date;
-        //                 // role?: UserRole;
-        //                 // blocked_user?: number; 
-        //                 // count_error?: number; 
-        //                 // time_blocked?: Date;
-                       
-        //             });
-    
-        //             return userPageable
-        //         })
-        //     )
-        // }
-
         findOne(blog_id: number) : Observable<Blog>{
-            // return from(this.blogRepository.findOne(
-            //     {blog_id},
-            //     {relations: ['author'],}
-            // ))
             return from(this.blogRepository.createQueryBuilder("blogs")
             .where({blog_id})
             .leftJoinAndSelect("blogs.author", "author")
-            // .where("bill.accountBill LIKE :accountBill", {accountBill})
-            // .andWhere("author.id = :userId", {userId: author.id})
             .leftJoinAndSelect("blogs.blogType","blogType")
             .select(["blogs","author.username", "author.name","blogType"])
             .getMany())
@@ -132,10 +62,7 @@ export class BlogService {
                     blog.map((item: any) => {
                         if(!item.blog_id) throw new BadRequestException("Blog does not exist ");
                         item.views = item.views  + 1;
-                        // const {...result} = item;
-                        // return item;
                     })
-                    // blog.views = blog.views + 1;
                     const {...result} = blog;
                     return result;
 

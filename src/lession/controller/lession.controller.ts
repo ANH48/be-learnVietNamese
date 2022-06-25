@@ -114,13 +114,18 @@ export class LessionController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
+<<<<<<< HEAD
         const str = "https://learnvietnamese.herokuapp.com/lession/lession-image/" + file.filename;
+=======
+        // const str = "https://learnvietnamese.herokuapp.com/lession/lession-image/" + file.filename;
+        const str = "http://localhost:4000/lession/lession-image/" + file.filename;
+>>>>>>> tinh
         const obj = {
             image_name: file.filename,
             image_link: str
         }
         this.imageService.create(obj).subscribe();
-        return of({imagePath: file.filename});
+        return of({imagePath: file.filename, imageLink: str});
     }
 
     @Get('lession-image/:imagename')

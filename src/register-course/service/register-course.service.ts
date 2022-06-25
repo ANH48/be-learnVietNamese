@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { catchError, from, map, Observable, throwError } from 'rxjs';
 import { AuthService } from 'src/auth/service/auth.service';
+import { UserEntity } from 'src/user/models/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterCourseEntity } from '../models/register-course.entity';
 import { RegisterCourse, RegisterCourseByUser } from '../models/register-course.interface';
@@ -14,38 +15,18 @@ export class RegisterCourseService {
         @InjectRepository(RegisterCourseEntity) private readonly registerCourseRepositoryByUser: Repository<RegisterCourseByUser>
     ) { }
 
-    // create(register: RegisterCourse, user: any, course: any): Observable<RegisterCourse> {
-    //     const newRegister = new RegisterCourseEntity();
-
-    //     newRegister.register = register.register;
-    //     newRegister.user = register.user;
-    //     newRegister.course = register.course;
-
-    //     return from(this.registerCourseRepository.save(newRegister)).pipe(
-    //         map((register: RegisterCourse) => {
-    //             const { ...result } = register;
-    //             return result;
-    //         }),
-    //         catchError(err => throwError(() => new Error(err))
-    //         )
-    //     )
-    // }
-
-    create(register: RegisterCourse, user: any, course: any): Observable<any> {
+    create(register: any, user: UserEntity): Observable<RegisterCourse> {
         const newRegister = new RegisterCourseEntity();
 
         newRegister.register = register.register;
-        newRegister.user = user.user;
-        newRegister.course = course.course;
-
+        newRegister.course = register.course_id;
+        newRegister.user = user;
         return from(this.registerCourseRepository.save(newRegister)).pipe(
             map((register: RegisterCourse) => {
                 const { ...result } = register;
-                console.log(result)
                 return result;
             }),
-            catchError(err => throwError(() => new Error(err))
-            )
+            catchError(err => { throw new BadRequestException(err) })
         )
     }
 

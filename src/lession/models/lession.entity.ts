@@ -1,5 +1,6 @@
 import { BlogEntity } from "src/blog/models/blog.entity";
 import { Blog } from "src/blog/models/blog.interface";
+import { CommentLessonEntity } from "src/comment-lesson/models/comment-lesson.entity";
 import { CourseEntity } from "src/course/models/course.entity";
 import { Lession_saveEntity } from "src/lession-save/models/lession-save.entity";
 import { UserEntity } from "src/user/models/user.entity";
@@ -14,13 +15,6 @@ export class LessionEntity {
     @Column( {unique: true} )
     lession_name: string;
 
-    // @OneToMany(() => BlogEntity, blog => blog.blog_id)
-    // blog: Blog;
-    // @BeforeInsert()
-    // emailToLowerCase(){
-    //     this.email = this.email.toLowerCase()
-    // }
-
     @Column()
     lession_keyword: string;
 
@@ -34,14 +28,6 @@ export class LessionEntity {
 
     @Column({default: 0})
     views: number;
-    // @Column( )
-    // lession_vote: string;
-
-    // @Column( {type: true} )
-    // course_keywords: string;
-
-    // @Column({type: 'enum', enum: CourseType, default: CourseType.BEGINNER})
-    // role: CourseType;
 
     @ManyToOne(() => CourseEntity, courseType => courseType.lession)
     public courseType: CourseEntity;
@@ -49,10 +35,8 @@ export class LessionEntity {
     @ManyToOne(() => UserEntity, (user: UserEntity) => user.lessions)
     public author: UserEntity;
 
-    // @ManyToOne(() => Lession_saveEntity, (lession_save: Lession_saveEntity) => lession_save.lession)
-    // public lession_save: UserEntity;
-
-    
+    @OneToMany(() => CommentLessonEntity, (commentLesson: CommentLessonEntity) => commentLesson.user)
+    public comment_lesson: CommentLessonEntity[];
 
     @Column({type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
     lession_create: Date;

@@ -101,7 +101,7 @@ export class UserController {
    
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER)
+    @hasRoles(UserRole.ADMIN,UserRole.MEMBER,UserRole.WRITTER ,UserRole.USER, UserRole.STUDENT)
     @Patch('update/:id')
     @ApiBody({ type: UpdateUserDTO})
     updateOne(@Param('id') id: string, @Body() user: User, @Request() req): Observable<any>{
@@ -121,14 +121,7 @@ export class UserController {
         }
        
     }
-
-    // @hasRoles(UserRole.USER)
-    //
-    // @Put(':id/role')
-    // updateRoleOfUser(@Param('id') id: string, @Body() user: User): Observable<User>{
-    //     return this.userService.updateRoleOfUser(Number(id),user);
-    // }
-
+ 
   
     @Post('register')
     @ApiBody({ type: RegisterUserDTO})
@@ -175,20 +168,21 @@ export class UserController {
     @ApiBody({ type: ForgotPasswordDTO})
     async forgetpassword(@Body() user: User){
         const obj: any = {
-            error: "Token send to email, Please check your email"
+            success: "Token send to email, Please check your email"
         } 
         const regularExpression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         const isEmail =  regularExpression.test(String(user.email).toLowerCase());
         if(!isEmail){
-            obj.error = "Email error ";
+            obj.success = "Email error ";
             return obj;
         }
         const dbUser = await this.userService.isEmail(user);
         if(dbUser!=0&&dbUser){
             await this.mailService.sendUserConfirmation(dbUser, dbUser.tokenEmail);
-            obj.error = "Token send to email, Please check your email";
+            obj.success = "Token send to email, Please check your email";
             return obj
         }else{
+            obj.success = "Invalid email";
             return obj;
         }
         

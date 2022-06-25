@@ -13,13 +13,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: async (config: ConfigService) => ({
         // transport: config.get("MAIL_TRANSPORT"),
         // or
+        
         transport: {
-          host: config.get('MAIL_HOST'),
+          host: 'smtp.gmail.com',
           secure: false,
           // port: 465,
           auth: {
-            user: config.get('MAIL_USER'),
-            pass: config.get('MAIL_PASSWORD'),
+            user: 'belearningvietnamese@gmail.com',
+            pass: 'belearningvietnamese@123',
+            
           },
         },
         defaults: {

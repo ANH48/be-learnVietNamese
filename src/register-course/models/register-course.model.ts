@@ -7,7 +7,6 @@ export class RegisterCourseDTO {
     @ApiProperty({type: Number, description: 'course_id'})
     course_id: number;
 
-
     @ApiProperty({type: Boolean, description: 'register'})
     register?: boolean;
 }

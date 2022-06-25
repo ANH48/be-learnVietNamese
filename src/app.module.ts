@@ -16,6 +16,7 @@ import { Lession_saveModule } from './lession-save/lession-save.module';
 import { ImageModule } from './Image/image.module';
 import { CourseTypeModule } from './course-type/course-type.module';
 import { RegisterCourseModule } from './register-course/register-course.module';
+import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { RegisterCourseModule } from './register-course/register-course.module';
     CourseModule,
     CourseTypeModule,
     LessionModule,
+    CommentLessonModule,
     MailModule,
     SurcriseModule,
     Lession_saveModule,
