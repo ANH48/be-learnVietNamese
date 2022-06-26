@@ -19,7 +19,7 @@ export class CommentLessonController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.TEACHER, ListRole.STUDENT)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER, ListRole.STUDENT, ListRole.USER)
     @Post('create')
     @ApiCreatedResponse({ description: "Create date with post" })
     @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -57,7 +57,6 @@ export class CommentLessonController {
         throw new BadRequestException("Forbidden user");
     }
 
-    @hasRoles(ListRole.USER)
     @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN)
     @Delete('delete/:id')

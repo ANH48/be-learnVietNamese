@@ -64,6 +64,10 @@ export class CourseController {
         return this.courseService.findByRole(param);
     }
 
+    @Get("course_name")
+    findByCourseName(@Query() param: ParamDTO, @Request() req) : Observable<Course[]>{
+        return this.courseService.findByCourseName(param);
+    }
   
     @Get(':course_id')
     findOne(@Param('course_id') course_id: string) : Observable<Course>{

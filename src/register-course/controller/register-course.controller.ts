@@ -19,7 +19,7 @@ export class RegisterCourseController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.TEACHER, ListRole.STUDENT)
+    @hasRoles(ListRole.ADMIN, ListRole.TEACHER, ListRole.STUDENT, ListRole.USER)
     @Post('create')
     @ApiCreatedResponse({ description: "Create date with post" })
     @ApiForbiddenResponse({ description: 'Forbidden' })
@@ -39,7 +39,7 @@ export class RegisterCourseController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
-    @hasRoles(ListRole.ADMIN, ListRole.STUDENT, ListRole.TEACHER)
+    @hasRoles(ListRole.ADMIN, ListRole.STUDENT, ListRole.TEACHER, ListRole.USER)
     @Get("user")
     async findByUserId(@Request() req) {
         if(req.user) {
@@ -50,7 +50,7 @@ export class RegisterCourseController {
         throw new BadRequestException("Forbidden user");
     }
 
-    @hasRoles(ListRole.USER, ListRole.STUDENT)
+    @hasRoles(ListRole.USER, ListRole.STUDENT, ListRole.USER)
     @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN)
     @Delete('delete/:id')

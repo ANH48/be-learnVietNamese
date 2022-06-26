@@ -67,6 +67,19 @@ export class CourseService {
         )
     }
 
+    findByCourseName(param): Observable<Course[]> {
+        return from(this.courseEntity.find(
+            {
+                relations: ["lession"],
+                where: {course_name: Like('%' + (param?.keyword || "") + '%')},
+            }
+        )).pipe(
+            map((course: Course[]) => {
+                return course;
+            })
+        )
+    }
+
     findOne(course_id: number): Observable<Course> {
         return from(this.courseEntity.findOne({ course_id }, { relations: ["lession"] })).pipe(
             map((blog: Course) => {
