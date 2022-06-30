@@ -49,26 +49,27 @@ export class BlogService {
         }
 
 
-        findOne(blog_id: number) : Observable<Blog>{
+        findOne(blog_id: number) : Observable<Blog[]>{
             return from(this.blogRepository.createQueryBuilder("blogs")
             .where({blog_id})
             .leftJoinAndSelect("blogs.author", "author")
             .leftJoinAndSelect("blogs.blogType","blogType")
             .select(["blogs","author.username", "author.name","blogType"])
             .getMany())
-            .pipe(
-                map((blog: any) => {
-                    if(!blog || blog === []) throw new BadRequestException("Blog does not exist ");
-                    blog.map((item: any) => {
-                        if(!item.blog_id) throw new BadRequestException("Blog does not exist ");
-                        item.views = item.views  + 1;
-                    })
-                    const {...result} = blog;
-                    return result;
+            // .pipe(
+            //     map((blog: any) => {
+            //         if(!blog || blog === []) throw new BadRequestException("Blog does not exist ");
+            //         blog.map((item: any) => {
+            //             if(!item.blog_id) throw new BadRequestException("Blog does not exist ");
+            //             item.views = item.views  + 1;
+            //         })
+            //         const {...result} = blog;
+            //         return result;
 
-                })
-                )
+            //     })
+            //     )
         }
+
         updateLike(blog_id: number): Observable<any>{
             return from(this.blogRepository.findOne({blog_id})).pipe(
                 map((blog: Blog) => {
@@ -96,6 +97,7 @@ export class BlogService {
         deleteOne(id: number) : Observable<any>{
             return from(this.blogRepository.delete(id));
         }
+        
         deleteOneCheckId(blog_id: number, idUser: number) : Observable<any>{
             return from(this.blogRepository.findOne({blog_id},{relations: ["author"]})).pipe(
                 map((blog: Blog) => {

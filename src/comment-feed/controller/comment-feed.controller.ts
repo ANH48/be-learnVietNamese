@@ -6,15 +6,15 @@ import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles.guards';
 import { ListRole } from 'src/auth/role/role.enum';
-import { CommentLesson } from '../models/comment-lesson.interface';
-import { CommentLessonDTO } from '../models/comment-lesson.model';
-import { CommentLessonService } from '../service/comment-lesson.service';
+import { CommentFeed } from '../models/comment-feed.interface';
+import { CommentFeedDTO } from '../models/comment-feed.model';
+import { CommentFeedService } from '../service/comment-feed.service';
 
-@ApiTags('comment-lesson')
-@Controller('comment-lesson')
-export class CommentLessonController {
+@ApiTags('comment-feed')
+@Controller('comment-feed')
+export class CommentFeedController {
     constructor(
-        private commentLessonService: CommentLessonService
+        private commentFeedService: CommentFeedService
     ) { }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -23,9 +23,9 @@ export class CommentLessonController {
     @Post('create')
     @ApiCreatedResponse({ description: "Create date with post" })
     @ApiForbiddenResponse({ description: 'Forbidden' })
-    @ApiBody({ type: CommentLessonDTO })
-    create(@Body() comment: CommentLesson, @Request() req): Observable<CommentLesson | Object> {
-        return this.commentLessonService.create(comment, req.user.user).pipe(map((comment: CommentLesson) => comment),
+    @ApiBody({ type: CommentFeedDTO })
+    create(@Body() comment: CommentFeed, @Request() req): Observable<CommentFeed | Object> {
+        return this.commentFeedService.create(comment, req.user.user).pipe(map((comment: CommentFeed) => comment),
         catchError(err => { throw new BadRequestException(err) }))
     }
 
@@ -33,16 +33,16 @@ export class CommentLessonController {
     @ApiBearerAuth()
     @hasRoles(ListRole.ADMIN)
     @Get()
-    findAll(): Observable<CommentLesson[]> {
-        return this.commentLessonService.findAll();
+    findAll(): Observable<CommentFeed[]> {
+        return this.commentFeedService.findAll();
     }
 
-    @Get("lesson/:lesson_id")
-    async findByLessonId(@Param('lesson_id') lesson_id: string) {
-        if(lesson_id) {
-            let listLesson = await this.commentLessonService.findLessonById(Number(lesson_id));
-            nestedGroupBy(listLesson, ['lesson']);
-            return listLesson;
+    @Get("feed/:feed_id")
+    async findByFeedId(@Param('feed_id') feed_id: string) {
+        if(feed_id) {
+            let listFeed = await this.commentFeedService.findfeedById(Number(feed_id));
+            nestedGroupBy(listFeed, ['Feed']);
+            return listFeed;
         }
         throw new BadRequestException("Forbidden user");
     }
@@ -51,6 +51,6 @@ export class CommentLessonController {
     @hasRoles(ListRole.ADMIN)
     @Delete('delete/:id')
     deleteOne(@Param('id') id: string) : Observable<any> {
-        return this.commentLessonService.deleteOne(Number(id));
+        return this.commentFeedService.deleteOne(Number(id));
     }
 }

@@ -2,6 +2,7 @@ import { BlogEntity } from "src/blog/models/blog.entity";
 import { CommentLessonEntity } from "src/comment-lesson/models/comment-lesson.entity";
 import { CourseEntity } from "src/course/models/course.entity";
 import { LessionEntity } from "src/lession/models/lession.entity";
+import { FeedEntity } from "src/q-and-a/models/feed.entity";
 import { RegisterCourseEntity } from "src/register-course/models/register-course.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
@@ -28,6 +29,9 @@ export class UserEntity {
 
     @OneToMany(() => BlogEntity, (blog: BlogEntity) => blog.author)
     public blogs: BlogEntity[];
+
+    @OneToMany(() => FeedEntity, (feed: FeedEntity) => feed.author)
+    public feed: FeedEntity[];
 
     @OneToMany(() => CourseEntity, (course: CourseEntity) => course.author)
     public course: CourseEntity[];

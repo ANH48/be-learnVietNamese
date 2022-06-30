@@ -17,6 +17,8 @@ import { ImageModule } from './Image/image.module';
 import { CourseTypeModule } from './course-type/course-type.module';
 import { RegisterCourseModule } from './register-course/register-course.module';
 import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
+import { FeedModule } from './q-and-a/feed.module';
+import { CommentFeedModule } from './comment-feed/comment-feed.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { CommentLessonModule } from './comment-lesson/comment-lesson.module';
     ImageModule,
     SurcriseModule,
     RegisterCourseModule,
+    FeedModule,
+    CommentFeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
